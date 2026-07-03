@@ -1,0 +1,16 @@
+services:
+  mysql-clinica:
+    image: mysql:9
+    container_name: mysql-clinica
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: clinica_db
+      MYSQL_USER: clinica_user
+      MYSQL_PASSWORD: clinica_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
