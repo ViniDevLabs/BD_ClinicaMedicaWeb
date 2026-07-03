@@ -1,0 +1,29 @@
+info:
+  name: Atualizar atendente
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{API_URL}}/atendentes/8"
+  body:
+    type: json
+    data: |-
+      {
+        "cpf": "02085317006",
+        "nome": "Maria Atendente Silva",
+        "email": "maria.silva@clinica.com",
+        "senha": "novaSenhaSeModificada",
+        "dataNascimento": "1995-02-10",
+        "ehAdministrador": 0,
+        "matricula": "ATND-002-REV"
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

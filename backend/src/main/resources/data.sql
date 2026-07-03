@@ -1,8 +1,10 @@
+-- Senha de todos os registros abaixo em texto limpo: senha123
 INSERT IGNORE INTO Pessoa (id, cpf, nome, email, senha, data_nascimento, eh_administrador) VALUES 
-(1, '11111111111', 'Admin Sistema', 'admin@clinica.com', 'hash_senha_123', '1980-01-01', 1),
-(2, '22222222222', 'Dr. House', 'house@clinica.com', 'hash_senha_123', '1965-05-15', 0),
-(3, '33333333333', 'João Silva', 'joao@email.com', 'hash_senha_123', '1990-10-20', 0),
-(4, '44444444444', 'Maria Atendente', 'maria@clinica.com', 'hash_senha_123', '1995-02-10', 0);
+(1, '11111111111', 'Admin Sistema', 'admin@clinica.com', '$argon2id$v=19$m=16384,t=2,p=1$4hwXb6RQmBKCAeqpCEh+uA$dSQq4lbKhuDrLZwxmUMBJLsY6QgnPdLX5CZwsPkMmcY', '1980-01-01', 1),
+(2, '22222222222', 'Dr. House', 'house@clinica.com', '$argon2id$v=19$m=16384,t=2,p=1$4hwXb6RQmBKCAeqpCEh+uA$dSQq4lbKhuDrLZwxmUMBJLsY6QgnPdLX5CZwsPkMmcY', '1965-05-15', 0),
+(3, '33333333333', 'João Silva', 'joao@email.com', '$argon2id$v=19$m=16384,t=2,p=1$4hwXb6RQmBKCAeqpCEh+uA$dSQq4lbKhuDrLZwxmUMBJLsY6QgnPdLX5CZwsPkMmcY', '1990-10-20', 0),
+(4, '44444444444', 'Maria Atendente', 'maria@clinica.com', '$argon2id$v=19$m=16384,t=2,p=1$4hwXb6RQmBKCAeqpCEh+uA$dSQq4lbKhuDrLZwxmUMBJLsY6QgnPdLX5CZwsPkMmcY', '1995-02-10', 0);
+-- As senhas das pessoas acima são "senha123"
 
 INSERT IGNORE INTO Medico (id_pessoa, numero, estado) VALUES (2, 12345, 'SP');
 INSERT IGNORE INTO Medico_Especialidade (id_medico, especialidade) VALUES (2, 'Infectologia');

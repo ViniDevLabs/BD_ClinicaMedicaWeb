@@ -1,0 +1,29 @@
+info:
+  name: Criar atendente
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{API_URL}}/atendentes"
+  body:
+    type: json
+    data: |-
+      {
+        "cpf": "02085317006",
+        "nome": "Maria Atendente",
+        "email": "maria@clinica.com",
+        "senha": "senha123",
+        "dataNascimento": "1995-02-10",
+        "ehAdministrador": 0,
+        "matricula": "ATND-002"
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

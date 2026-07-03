@@ -1,0 +1,17 @@
+info:
+  name: Excluir médico
+  type: http
+  seq: 5
+
+http:
+  method: DELETE
+  url: "{{API_URL}}/medicos/6"
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

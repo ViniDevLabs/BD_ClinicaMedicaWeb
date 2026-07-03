@@ -1,0 +1,34 @@
+info:
+  name: Atualizar médico
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{API_URL}}/medicos/6"
+  body:
+    type: json
+    data: |-
+      {
+        "cpf": "26851522020",
+        "nome": "Dr. Gregory House refatoraodo",
+        "email": "house.novo@clinica.com",
+        "senha": "senha1234",
+        "dataNascimento": "1965-05-15",
+        "ehAdministrador": 0,
+        "numero": 54321,
+        "estado": "SP",
+        "especialidades": [
+          "Infectologia",
+          "Clínica Médica"
+        ]
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

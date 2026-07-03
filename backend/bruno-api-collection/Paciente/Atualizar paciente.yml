@@ -1,0 +1,30 @@
+info:
+  name: Atualizar paciente
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{API_URL}}/pacientes/9"
+  body:
+    type: json
+    data: |-
+      {
+        "cpf": "84724338032",
+        "nome": "João Silva Santos",
+        "email": "joao.santos@email.com",
+        "senha": "novaSenhaSeModificada",
+        "dataNascimento": "1990-10-20",
+        "ehAdministrador": 0,
+        "convenio": "Bradesco Saúde",
+        "numCarteirinha": "9876543210"
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

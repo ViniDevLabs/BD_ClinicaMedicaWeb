@@ -1,0 +1,30 @@
+info:
+  name: Criar paciente
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{API_URL}}/pacientes"
+  body:
+    type: json
+    data: |-
+      {
+        "cpf": "84724338032",
+        "nome": "João Silva",
+        "email": "joao@email.com",
+        "senha": "senha123",
+        "dataNascimento": "1990-10-20",
+        "ehAdministrador": 0,
+        "convenio": "Unimed",
+        "numCarteirinha": "1234567890"
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

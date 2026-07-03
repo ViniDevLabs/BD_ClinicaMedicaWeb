@@ -1,0 +1,17 @@
+info:
+  name: Excluir atendente
+  type: http
+  seq: 5
+
+http:
+  method: DELETE
+  url: "{{API_URL}}/atendentes/8"
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

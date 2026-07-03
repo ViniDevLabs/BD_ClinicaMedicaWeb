@@ -31,3 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Ignore Bruno local environment overrides and secrets
+**/environments/*.bru
+
+# Ignore local preferences and app cache
+**/.bruno/
