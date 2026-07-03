@@ -1,5 +1,6 @@
 package com.clinicamedica.service;
 
+import com.clinicamedica.config.SecurityUtils;
 import com.clinicamedica.model.Paciente;
 import com.clinicamedica.model.Pessoa;
 import com.clinicamedica.repository.PacienteRepository;
@@ -77,12 +78,15 @@ public class PacienteService {
     }
 
     public Paciente buscarPorId(Integer id) {
+        SecurityUtils.verificarPermissaoOuProprioId(id, "ADMINISTRADOR", "ATENDENTE", "MEDICO");
         return pacienteRepository.findById(id)
                 .orElseThrow(() -> new EmptyResultDataAccessException("Paciente não encontrado", 1));
     }
 
     @Transactional
     public Paciente atualizarPaciente(Integer id, Paciente pacienteAtualizado) {
+        SecurityUtils.verificarPermissaoOuProprioId(id, "ADMINISTRADOR", "ATENDENTE");
+
         Paciente existente = buscarPorId(id);
         pacienteAtualizado.getPessoa().setId(existente.getPessoa().getId());
 

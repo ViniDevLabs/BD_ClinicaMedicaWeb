@@ -1,5 +1,6 @@
 package com.clinicamedica.service;
 
+import com.clinicamedica.config.SecurityUtils;
 import com.clinicamedica.model.Atendente;
 import com.clinicamedica.model.Pessoa;
 import com.clinicamedica.repository.AtendenteRepository;
@@ -82,6 +83,8 @@ public class AtendenteService {
 
     @Transactional
     public Atendente atualizarAtendente(Integer id, Atendente atendenteAtualizado) {
+        SecurityUtils.verificarPermissaoOuProprioId(id, "ADMINISTRADOR");
+
         Atendente existente = buscarPorId(id);
         atendenteAtualizado.getPessoa().setId(existente.getPessoa().getId());
 

@@ -18,11 +18,14 @@ public class AuthService {
     private final PessoaRepository pessoaRepository;
     private final PasswordEncoder passwordEncoder;
     private final JdbcTemplate jdbcTemplate;
+    private final TokenService tokenService;
 
-    public AuthService(PessoaRepository pessoaRepository, PasswordEncoder passwordEncoder, JdbcTemplate jdbcTemplate) {
+    public AuthService(PessoaRepository pessoaRepository, PasswordEncoder passwordEncoder, JdbcTemplate jdbcTemplate,
+            TokenService tokenService) {
         this.pessoaRepository = pessoaRepository;
         this.passwordEncoder = passwordEncoder;
         this.jdbcTemplate = jdbcTemplate;
+        this.tokenService = tokenService;
     }
 
     public LoginResponseDTO autenticar(LoginRequestDTO request) {
@@ -58,7 +61,9 @@ public class AuthService {
             throw new IllegalStateException("Erro de integridade: Usuário sem perfis atribuídos.");
         }
 
-        return new LoginResponseDTO("SESSION_MOCK_TOKEN", pessoa.getNome(), pessoa.getEmail(), perfis);
+        String tokenJWT = tokenService.gerarToken(pessoa, perfis);
+
+        return new LoginResponseDTO(tokenJWT, pessoa.getNome(), pessoa.getEmail(), perfis);
     }
 
     private boolean existeRegistro(String sql, Integer idPessoa) {

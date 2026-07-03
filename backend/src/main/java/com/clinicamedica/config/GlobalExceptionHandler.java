@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.clinicamedica.exception.CredenciaisInvalidasException;
+import com.clinicamedica.exception.TokenInvalidoException;
 
 import java.util.Map;
 
@@ -41,5 +42,19 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleCredenciaisInvalidas(CredenciaisInvalidasException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("erro", ex.getMessage()));
+    }
+
+    @ExceptionHandler(TokenInvalidoException.class)
+    public ResponseEntity<Object> handleTokenInvalido(TokenInvalidoException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("erro", ex.getMessage()));
+    }
+
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<Object> handleAccessDenied(org.springframework.security.access.AccessDeniedException ex) {
+        return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                .body(Map.of(
+                        "erro", "Acesso Proibido (403)",
+                        "detalhe", ex.getMessage()));
     }
 }

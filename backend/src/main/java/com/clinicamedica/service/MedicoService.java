@@ -1,5 +1,6 @@
 package com.clinicamedica.service;
 
+import com.clinicamedica.config.SecurityUtils;
 import com.clinicamedica.model.Medico;
 import com.clinicamedica.model.Pessoa;
 import com.clinicamedica.repository.MedicoRepository;
@@ -84,10 +85,14 @@ public class MedicoService {
 
     @Transactional
     public Medico atualizarMedico(Integer id, Medico medico) {
+        SecurityUtils.verificarPermissaoOuProprioId(id, "ADMINISTRADOR");
+
         Medico existente = buscarPorId(id);
         medico.getPessoa().setId(existente.getPessoa().getId());
+
         pessoaRepository.update(medico.getPessoa());
         medicoRepository.update(medico);
+
         return medico;
     }
 }
