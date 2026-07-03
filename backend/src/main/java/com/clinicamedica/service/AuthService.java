@@ -1,11 +1,14 @@
 package com.clinicamedica.service;
 
+import com.clinicamedica.config.CustomPrincipal;
 import com.clinicamedica.dto.request.LoginRequestDTO;
 import com.clinicamedica.dto.response.LoginResponseDTO;
+import com.clinicamedica.dto.response.MeResponseDTO;
 import com.clinicamedica.exception.CredenciaisInvalidasException;
 import com.clinicamedica.model.Pessoa;
 import com.clinicamedica.repository.PessoaRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -64,6 +67,28 @@ public class AuthService {
         String tokenJWT = tokenService.gerarToken(pessoa, perfis);
 
         return new LoginResponseDTO(tokenJWT, pessoa.getNome(), pessoa.getEmail(), perfis);
+    }
+
+    public MeResponseDTO obterUsuarioAutenticado() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !(authentication.getPrincipal() instanceof CustomPrincipal principal)) {
+            throw new IllegalStateException("Usuário não autenticado no contexto de segurança.");
+        }
+
+        Pessoa pessoa = pessoaRepository.findById(principal.id())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+
+        List<String> perfis = authentication.getAuthorities().stream()
+                .map(grantedAuthority -> grantedAuthority.getAuthority().replace("ROLE_", ""))
+                .toList();
+
+        return new MeResponseDTO(
+                pessoa.getId(),
+                pessoa.getCpf(),
+                pessoa.getNome(),
+                pessoa.getEmail(),
+                perfis);
     }
 
     private boolean existeRegistro(String sql, Integer idPessoa) {

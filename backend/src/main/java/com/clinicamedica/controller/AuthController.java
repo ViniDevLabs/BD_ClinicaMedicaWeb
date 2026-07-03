@@ -2,6 +2,7 @@ package com.clinicamedica.controller;
 
 import com.clinicamedica.dto.request.LoginRequestDTO;
 import com.clinicamedica.dto.response.LoginResponseDTO;
+import com.clinicamedica.dto.response.MeResponseDTO;
 import com.clinicamedica.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -28,5 +29,10 @@ public class AuthController {
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("erro", ex.getMessage()));
         }
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<MeResponseDTO> me() {
+        return ResponseEntity.ok(authService.obterUsuarioAutenticado());
     }
 }
