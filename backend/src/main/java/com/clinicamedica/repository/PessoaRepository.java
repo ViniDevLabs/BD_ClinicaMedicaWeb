@@ -78,4 +78,19 @@ public class PessoaRepository {
         String sql = "DELETE FROM Pessoa WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
+
+    public Optional<Pessoa> findByCpf(String cpf) {
+        String sql = "SELECT * FROM Pessoa WHERE cpf = ?";
+        return jdbcTemplate.query(sql, rowMapper, cpf).stream().findFirst();
+    }
+
+    public int countAssociatedProfiles(Integer idPessoa) {
+        String sql = "SELECT " +
+                "(SELECT COUNT(*) FROM Medico WHERE id_pessoa = ?) + " +
+                "(SELECT COUNT(*) FROM Paciente WHERE id_pessoa = ?) + " +
+                "(SELECT COUNT(*) FROM Atendente WHERE id_pessoa = ?) AS total_perfis";
+
+        Integer total = jdbcTemplate.queryForObject(sql, Integer.class, idPessoa, idPessoa, idPessoa);
+        return total != null ? total : 0;
+    }
 }

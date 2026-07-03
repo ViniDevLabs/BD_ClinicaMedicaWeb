@@ -58,4 +58,9 @@ public class PacienteRepository {
                 "INNER JOIN Pessoa p ON pa.id_pessoa = p.id WHERE pa.id_pessoa = ?";
         return jdbcTemplate.query(sql, rowMapper, id).stream().findFirst();
     }
+
+    public void delete(Integer id) {
+        String sql = "DELETE FROM Paciente WHERE id_pessoa = ?";
+        jdbcTemplate.update(sql, id);
+    }
 }

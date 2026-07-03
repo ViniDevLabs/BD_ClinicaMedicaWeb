@@ -5,28 +5,51 @@ import com.clinicamedica.model.Pessoa;
 import com.clinicamedica.repository.MedicoRepository;
 import com.clinicamedica.repository.PessoaRepository;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MedicoService {
 
     private final PessoaRepository pessoaRepository;
     private final MedicoRepository medicoRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public MedicoService(PessoaRepository pessoaRepository, MedicoRepository medicoRepository) {
+    public MedicoService(PessoaRepository pessoaRepository, MedicoRepository medicoRepository,
+            PasswordEncoder passwordEncoder) {
         this.pessoaRepository = pessoaRepository;
         this.medicoRepository = medicoRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
     public Medico salvarMedico(Medico medico) {
-        Pessoa pessoaSalva = pessoaRepository.save(medico.getPessoa());
+        Optional<Pessoa> pessoaExistente = pessoaRepository.findByCpf(medico.getPessoa().getCpf());
+        Pessoa pessoaParaVincular;
+
+        if (pessoaExistente.isPresent()) {
+            pessoaParaVincular = pessoaExistente.get();
+        } else {
+            String senhaHasheada = passwordEncoder.encode(medico.getPessoa().getSenha());
+
+            Pessoa novaPessoa = new Pessoa.Builder()
+                    .cpf(medico.getPessoa().getCpf())
+                    .nome(medico.getPessoa().getNome())
+                    .email(medico.getPessoa().getEmail())
+                    .senha(senhaHasheada)
+                    .dataNascimento(medico.getPessoa().getDataNascimento())
+                    .ehAdministrador(medico.getPessoa().getEhAdministrador())
+                    .build();
+
+            pessoaParaVincular = pessoaRepository.save(novaPessoa);
+        }
 
         Medico medicoPronto = new Medico.Builder()
-                .pessoa(pessoaSalva)
+                .pessoa(pessoaParaVincular)
                 .numero(medico.getNumero())
                 .estado(medico.getEstado())
                 .especialidades(medico.getEspecialidades())
@@ -37,21 +60,17 @@ public class MedicoService {
     }
 
     @Transactional
-    public Medico atualizarMedico(Integer id, Medico medicoAtualizado) {
-        Medico existente = buscarPorId(id);
-
-        medicoAtualizado.getPessoa().setId(existente.getPessoa().getId());
-
-        pessoaRepository.update(medicoAtualizado.getPessoa());
-        medicoRepository.update(medicoAtualizado);
-
-        return medicoAtualizado;
-    }
-
-    @Transactional
     public void excluirMedico(Integer id) {
+        // Valida a existência do médico
         buscarPorId(id);
-        pessoaRepository.delete(id);
+
+        medicoRepository.delete(id);
+
+        int perfisRestantes = pessoaRepository.countAssociatedProfiles(id);
+
+        if (perfisRestantes == 0) {
+            pessoaRepository.delete(id);
+        }
     }
 
     public List<Medico> listarTodos() {
@@ -61,5 +80,14 @@ public class MedicoService {
     public Medico buscarPorId(Integer id) {
         return medicoRepository.findById(id)
                 .orElseThrow(() -> new EmptyResultDataAccessException("Médico não encontrado", 1));
+    }
+
+    @Transactional
+    public Medico atualizarMedico(Integer id, Medico medico) {
+        Medico existente = buscarPorId(id);
+        medico.getPessoa().setId(existente.getPessoa().getId());
+        pessoaRepository.update(medico.getPessoa());
+        medicoRepository.update(medico);
+        return medico;
     }
 }

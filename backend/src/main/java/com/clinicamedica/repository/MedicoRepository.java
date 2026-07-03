@@ -111,4 +111,8 @@ public class MedicoRepository {
         List<Medico> result = jdbcTemplate.query(sql, medicoExtractor, id);
         return !result.isEmpty() ? Optional.of(result.get(0)) : Optional.empty();
     }
+
+    public void delete(Integer id) {
+        jdbcTemplate.update("DELETE FROM Medico WHERE id_pessoa = ?", id);
+    }
 }
