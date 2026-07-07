@@ -1,0 +1,29 @@
+info:
+  name: Criar disponibilidade
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{API_URL}}/disponibilidades-padrao"
+  body:
+    type: json
+    data: |-
+      {
+        "idMedico": 2,
+        "dataInicio": "2026-07-01",
+        "dataFim": null,
+        "horarioInicio": "08:00:00",
+        "horarioFim": "12:00:00",
+        "diaSemana": "SEGUNDA",
+        "duracaoConsulta": 30
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

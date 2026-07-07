@@ -1,0 +1,27 @@
+info:
+  name: Atualizar exceção
+  type: http
+  seq: 5
+
+http:
+  method: PUT
+  url: "{{API_URL}}/excecoes-agenda/1"
+  body:
+    type: json
+    data: |-
+      {
+        "idMedico": 2,
+        "dataExcecao": "2026-07-10",
+        "tipoExcecao": "ADICAO",
+        "horarioInicio": "14:00:00",
+        "horarioFim": "16:00:00"
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

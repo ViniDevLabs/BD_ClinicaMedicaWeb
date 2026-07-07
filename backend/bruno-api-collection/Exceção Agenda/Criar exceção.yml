@@ -1,0 +1,27 @@
+info:
+  name: Criar exceção
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{API_URL}}/excecoes-agenda"
+  body:
+    type: json
+    data: |-
+      {
+        "idMedico": 2,
+        "dataExcecao": "2026-07-10",
+        "tipoExcecao": "BLOQUEIO",
+        "horarioInicio": "10:00:00",
+        "horarioFim": "12:00:00"
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
