@@ -34,11 +34,11 @@ public class AuthService {
     public LoginResponseDTO autenticar(LoginRequestDTO request) {
         // Busca a pessoa pelo CPF
         Pessoa pessoa = pessoaRepository.findByCpf(request.cpf())
-                .orElseThrow(() -> new RuntimeException("Credenciais inválidas: Usuário não encontrado."));
+                .orElseThrow(() -> new CredenciaisInvalidasException("Credenciais inválidas."));
 
         // Compara a senha digitada com o hash Argon2 armazenado no banco
         if (!passwordEncoder.matches(request.senha(), pessoa.getSenha())) {
-            throw new CredenciaisInvalidasException("Credenciais inválidas: Senha incorreta.");
+            throw new CredenciaisInvalidasException("Credenciais inválidas.");
         }
 
         // Varre as tabelas filhas em busca de vínculos ativos

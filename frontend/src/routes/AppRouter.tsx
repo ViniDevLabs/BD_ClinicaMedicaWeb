@@ -12,6 +12,7 @@ import { GerenciarAtendentes } from "@/pages/admin/GerenciarAtendentes";
 import { GerenciarMedicos } from "@/pages/admin/GerenciarMedicos";
 import { GerenciarPacientes } from "@/pages/admin/GerenciarPacientes";
 import { FormularioMedico } from "@/pages/admin/FormularioMedico";
+import { Toaster } from "sonner";
 
 export function AppRouter() {
   return (
@@ -72,6 +73,7 @@ export function AppRouter() {
         <Route path="/forbidden" element={<div>Erro 403: Acesso Negado</div>} />
         <Route path="*" element={<div>Erro 404: Página não encontrada</div>} />
       </Routes>
+      <Toaster richColors position="top-right" />
     </BrowserRouter>
   );
 }

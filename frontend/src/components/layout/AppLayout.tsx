@@ -1,7 +1,6 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { AppHeader } from "../navigation/AppHeader";
 import { AppSidebar } from "../navigation/AppSidebar";
-import { Toaster } from "sonner";
 
 export function AppLayout() {
   const location = useLocation();
@@ -18,7 +17,6 @@ export function AppLayout() {
           <Outlet />
         </main>
       </div>
-      <Toaster richColors position="top-right" />
     </div>
   );
 }

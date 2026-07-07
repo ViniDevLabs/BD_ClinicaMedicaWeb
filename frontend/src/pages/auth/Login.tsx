@@ -15,13 +15,18 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Eye, EyeOff } from "lucide-react";
+import { validarCPF } from "@/lib/validations";
+import { mascaraCPFInput } from "@/lib/formatters";
+import { toast } from "sonner";
 
 const loginSchema = z.object({
   cpf: z
     .string()
-    .min(11, "CPF deve ter 11 dígitos")
-    .max(11, "Digite apenas os 11 números do CPF"),
-  senha: z.string().min(1, "A senha é obrigatória"),
+    .min(14, "O CPF deve estar completo")
+    .refine((val) => validarCPF(val), "CPF inválido")
+    .transform((val) => val.replace(/\D/g, "")),
+  senha: z.string().min(8, "A senha deve conter no mínimo 8 digitos"),
 });
 
 type LoginForm = z.infer<typeof loginSchema>;
@@ -30,6 +35,7 @@ export function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [erroApi, setErroApi] = useState<string | null>(null);
+  const [mostrarSenha, setMostrarSenha] = useState(false);
 
   const {
     register,
@@ -39,15 +45,21 @@ export function Login() {
     resolver: zodResolver(loginSchema),
   });
 
+  const { onChange: cpfOnChange, ...cpfRegisterRest } = register("cpf");
+
   const onSubmit = async (data: LoginForm) => {
     try {
       setErroApi(null);
       await login(data);
+
+      toast.success("Login realizado com sucesso!");
       navigate("/");
     } catch (error: any) {
-      setErroApi(
-        error.response?.data?.erro || "Erro ao conectar com o servidor.",
-      );
+      const mensagemErro =
+        error.response?.data?.erro || "Erro ao conectar com o servidor.";
+      setErroApi(mensagemErro);
+
+      toast.error(mensagemErro);
     }
   };
 
@@ -65,8 +77,17 @@ export function Login() {
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="cpf">CPF (apenas números)</Label>
-              <Input id="cpf" placeholder="00000000000" {...register("cpf")} />
+              <Label htmlFor="cpf">CPF</Label>
+              <Input
+                id="cpf"
+                placeholder="000.000.000-00"
+                maxLength={14}
+                {...cpfRegisterRest}
+                onChange={(e) => {
+                  e.target.value = mascaraCPFInput(e.target.value);
+                  cpfOnChange(e);
+                }}
+              />
               {errors.cpf && (
                 <span className="text-sm text-red-500">
                   {errors.cpf.message}
@@ -76,7 +97,22 @@ export function Login() {
 
             <div className="space-y-2">
               <Label htmlFor="senha">Senha</Label>
-              <Input id="senha" type="password" {...register("senha")} />
+              <div className="relative">
+                <Input
+                  id="senha"
+                  type={mostrarSenha ? "text" : "password"}
+                  {...register("senha")}
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setMostrarSenha(!mostrarSenha)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700 transition-colors focus:outline-none"
+                  aria-label={mostrarSenha ? "Ocultar senha" : "Exibir senha"}
+                >
+                  {mostrarSenha ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
               {errors.senha && (
                 <span className="text-sm text-red-500">
                   {errors.senha.message}
@@ -90,7 +126,11 @@ export function Login() {
               </div>
             )}
 
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              className="w-full mt-2"
+              disabled={isSubmitting}
+            >
               {isSubmitting ? "Autenticando..." : "Entrar"}
             </Button>
           </form>

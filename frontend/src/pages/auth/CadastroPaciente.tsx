@@ -13,13 +13,23 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Eye, EyeOff } from "lucide-react";
 import { pacienteService } from "@/services/paciente/pacienteService";
 
+// Importando as funções utilitárias que criamos
+import { validarCPF } from "@/lib/validations";
+import { mascaraCPFInput } from "@/lib/formatters";
+import { toast } from "sonner";
+
 const cadastroSchema = z.object({
-  cpf: z.string().length(11, "O CPF deve ter exatamente 11 números"),
+  cpf: z
+    .string()
+    .min(14, "O CPF deve estar completo")
+    .refine((val) => validarCPF(val), "CPF inválido")
+    .transform((val) => val.replace(/\D/g, "")),
   nome: z.string().min(3, "Nome muito curto"),
-  email: z.email("E-mail inválido"),
-  senha: z.string().min(6, "A senha deve ter no mínimo 6 caracteres"),
+  email: z.string().email("E-mail inválido"),
+  senha: z.string().min(8, "A senha deve conter no mínimo 8 dígitos"),
   dataNascimento: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, "Use o formato AAAA-MM-DD"),
@@ -32,6 +42,7 @@ type CadastroForm = z.infer<typeof cadastroSchema>;
 export function CadastroPaciente() {
   const navigate = useNavigate();
   const [erroApi, setErroApi] = useState<string | null>(null);
+  const [mostrarSenha, setMostrarSenha] = useState(false);
 
   const {
     register,
@@ -41,15 +52,21 @@ export function CadastroPaciente() {
     resolver: zodResolver(cadastroSchema),
   });
 
+  const { onChange: cpfOnChange, ...cpfRegisterRest } = register("cpf");
+
   const onSubmit = async (data: CadastroForm) => {
     try {
       setErroApi(null);
       await pacienteService.cadastrar({ ...data, ehAdministrador: 0 });
-      navigate("/login", {
-        state: { mensagem: "Cadastro realizado com sucesso. Faça login." },
-      });
+
+      toast.success("Cadastro realizado com sucesso!");
+      navigate("/login");
     } catch (error: any) {
-      setErroApi(error.response?.data?.erro || "Erro ao realizar cadastro.");
+      const mensagemErro =
+        error.response?.data?.erro || "Erro ao realizar cadastro.";
+      setErroApi(mensagemErro);
+
+      toast.error(mensagemErro);
     }
   };
 
@@ -78,8 +95,17 @@ export function CadastroPaciente() {
               </div>
 
               <div className="space-y-2">
-                <Label>CPF (Apenas números)</Label>
-                <Input placeholder="00000000000" {...register("cpf")} />
+                <Label htmlFor="cpf">CPF</Label>
+                <Input
+                  id="cpf"
+                  placeholder="000.000.000-00"
+                  maxLength={14}
+                  {...cpfRegisterRest}
+                  onChange={(e) => {
+                    e.target.value = mascaraCPFInput(e.target.value);
+                    cpfOnChange(e);
+                  }}
+                />
                 {errors.cpf && (
                   <span className="text-sm text-red-500">
                     {errors.cpf.message}
@@ -97,7 +123,7 @@ export function CadastroPaciente() {
                 )}
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 md:col-span-2">
                 <Label>E-mail</Label>
                 <Input
                   type="email"
@@ -111,9 +137,24 @@ export function CadastroPaciente() {
                 )}
               </div>
 
-              <div className="space-y-2">
-                <Label>Senha</Label>
-                <Input type="password" {...register("senha")} />
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="senha">Senha</Label>
+                <div className="relative">
+                  <Input
+                    id="senha"
+                    type={mostrarSenha ? "text" : "password"}
+                    {...register("senha")}
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setMostrarSenha(!mostrarSenha)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700 transition-colors focus:outline-none"
+                    aria-label={mostrarSenha ? "Ocultar senha" : "Exibir senha"}
+                  >
+                    {mostrarSenha ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
                 {errors.senha && (
                   <span className="text-sm text-red-500">
                     {errors.senha.message}
