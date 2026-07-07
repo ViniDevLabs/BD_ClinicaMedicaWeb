@@ -1,0 +1,23 @@
+info:
+  name: Anexar laudo
+  type: http
+  seq: 7
+
+http:
+  method: PATCH
+  url: "{{API_URL}}/exames/1/anexar-laudo"
+  body:
+    type: json
+    data: |-
+      {
+        "arquivoLaudoPath": "/laudos/exame-1.pdf"
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,26 @@
+info:
+  name: Atualizar prontuário
+  type: http
+  seq: 5
+
+http:
+  method: PUT
+  url: "{{API_URL}}/prontuarios/1"
+  body:
+    type: json
+    data: |-
+      {
+        "idAgendamento": 1,
+        "diagnostico": "Faringite bacteriana",
+        "prescricao": "Amoxicilina 500mg 8/8h por 7 dias.",
+        "registroObservacoes": "Prescrição ajustada após reavaliação."
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

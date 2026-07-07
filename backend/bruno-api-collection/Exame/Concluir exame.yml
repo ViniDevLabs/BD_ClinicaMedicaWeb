@@ -1,0 +1,17 @@
+info:
+  name: Concluir exame
+  type: http
+  seq: 8
+
+http:
+  method: PATCH
+  url: "{{API_URL}}/exames/1/concluir"
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
