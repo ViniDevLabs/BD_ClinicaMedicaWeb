@@ -1,0 +1,28 @@
+info:
+  name: Criar agendamento
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{API_URL}}/agendamentos"
+  body:
+    type: json
+    data: |-
+      {
+        "idPaciente": 3,
+        "idAtendente": 4,
+        "idMedico": 2,
+        "idAgendamentoPai": null,
+        "dataHora": "2026-07-10T14:30:00",
+        "status": "AGENDADO"
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

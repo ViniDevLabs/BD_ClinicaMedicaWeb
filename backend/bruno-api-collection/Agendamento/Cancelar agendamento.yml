@@ -1,0 +1,17 @@
+info:
+  name: Cancelar agendamento
+  type: http
+  seq: 9
+
+http:
+  method: PATCH
+  url: "{{API_URL}}/agendamentos/1/cancelar"
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

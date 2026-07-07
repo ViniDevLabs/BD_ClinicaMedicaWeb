@@ -32,6 +32,23 @@ public class SecurityConfig {
     private static final String ROTA_ATENDENTES = "/api/atendentes";
     private static final String ROTA_ATENDENTES_ID = "/api/atendentes/{id}";
 
+    private static final String ROTA_DISPONIBILIDADES = "/api/disponibilidades-padrao";
+    private static final String ROTA_DISPONIBILIDADES_ID = "/api/disponibilidades-padrao/{id}";
+    private static final String ROTA_DISPONIBILIDADES_MEDICO = "/api/disponibilidades-padrao/medico/{idMedico}";
+
+    private static final String ROTA_EXCECOES_AGENDA = "/api/excecoes-agenda";
+    private static final String ROTA_EXCECOES_AGENDA_ID = "/api/excecoes-agenda/{id}";
+    private static final String ROTA_EXCECOES_AGENDA_MEDICO = "/api/excecoes-agenda/medico/{idMedico}";
+
+    private static final String ROTA_AGENDAMENTOS = "/api/agendamentos";
+    private static final String ROTA_AGENDAMENTOS_ID = "/api/agendamentos/{id}";
+    private static final String ROTA_AGENDAMENTOS_HORARIOS = "/api/agendamentos/horarios-disponiveis";
+    private static final String ROTA_AGENDAMENTOS_MEDICO = "/api/agendamentos/medico/{idMedico}";
+    private static final String ROTA_AGENDAMENTOS_PACIENTE = "/api/agendamentos/paciente/{idPaciente}";
+    private static final String ROTA_AGENDAMENTOS_CANCELAR = "/api/agendamentos/{id}/cancelar";
+    private static final String ROTA_AGENDAMENTOS_CONFIRMAR = "/api/agendamentos/{id}/confirmar";
+    private static final String ROTA_AGENDAMENTOS_REALIZAR = "/api/agendamentos/{id}/realizar";
+
     private static final String ROLE_ADMIN = "ADMINISTRADOR";
     private static final String ROLE_MEDICO = "MEDICO";
     private static final String ROLE_ATENDENTE = "ATENDENTE";
@@ -111,6 +128,84 @@ public class SecurityConfig {
 
                     req.requestMatchers(HttpMethod.GET, ROTA_AUTH_ME).authenticated();
 
+                    // ===================================================
+                    // DISPONIBILIDADES PADRÃO
+                    // ===================================================
+                    req.requestMatchers(HttpMethod.POST, ROTA_DISPONIBILIDADES)
+                            .hasAnyRole(ROLE_ADMIN, ROLE_MEDICO);
+
+                    req.requestMatchers(HttpMethod.GET, ROTA_DISPONIBILIDADES)
+                            .hasAnyRole(ROLE_ADMIN, ROLE_ATENDENTE, ROLE_MEDICO);
+
+                    req.requestMatchers(HttpMethod.GET, ROTA_DISPONIBILIDADES_ID)
+                            .hasAnyRole(ROLE_ADMIN, ROLE_ATENDENTE, ROLE_MEDICO);
+
+                    req.requestMatchers(HttpMethod.GET, ROTA_DISPONIBILIDADES_MEDICO)
+                            .hasAnyRole(ROLE_ADMIN, ROLE_ATENDENTE, ROLE_MEDICO);
+
+                    req.requestMatchers(HttpMethod.PUT, ROTA_DISPONIBILIDADES_ID)
+                            .hasAnyRole(ROLE_ADMIN, ROLE_MEDICO);
+
+                    req.requestMatchers(HttpMethod.DELETE, ROTA_DISPONIBILIDADES_ID)
+                            .hasAnyRole(ROLE_ADMIN, ROLE_MEDICO);
+
+                    // ===================================================
+                    // EXCEÇÕES DE AGENDA
+                    // ===================================================
+                    req.requestMatchers(HttpMethod.POST, ROTA_EXCECOES_AGENDA)
+                            .hasAnyRole(ROLE_ADMIN, ROLE_MEDICO);
+
+                    req.requestMatchers(HttpMethod.GET, ROTA_EXCECOES_AGENDA)
+                            .hasAnyRole(ROLE_ADMIN, ROLE_ATENDENTE, ROLE_MEDICO);
+
+                    req.requestMatchers(HttpMethod.GET, ROTA_EXCECOES_AGENDA_ID)
+                            .hasAnyRole(ROLE_ADMIN, ROLE_ATENDENTE, ROLE_MEDICO);
+
+                    req.requestMatchers(HttpMethod.GET, ROTA_EXCECOES_AGENDA_MEDICO)
+                            .hasAnyRole(ROLE_ADMIN, ROLE_ATENDENTE, ROLE_MEDICO);
+
+                    req.requestMatchers(HttpMethod.PUT, ROTA_EXCECOES_AGENDA_ID)
+                            .hasAnyRole(ROLE_ADMIN, ROLE_MEDICO);
+
+                    req.requestMatchers(HttpMethod.DELETE, ROTA_EXCECOES_AGENDA_ID)
+                            .hasAnyRole(ROLE_ADMIN, ROLE_MEDICO);
+
+                    // ===================================================
+                    // AGENDAMENTOS
+                    // ===================================================
+                    req.requestMatchers(HttpMethod.POST, ROTA_AGENDAMENTOS)
+                            .hasAnyRole(ROLE_ADMIN, ROLE_ATENDENTE, ROLE_PACIENTE);
+
+                    req.requestMatchers(HttpMethod.GET, ROTA_AGENDAMENTOS)
+                            .hasAnyRole(ROLE_ADMIN, ROLE_ATENDENTE, ROLE_MEDICO);
+
+                    req.requestMatchers(HttpMethod.GET, ROTA_AGENDAMENTOS_ID)
+                            .authenticated();
+
+                    req.requestMatchers(HttpMethod.GET, ROTA_AGENDAMENTOS_HORARIOS)
+                            .authenticated();
+
+                    req.requestMatchers(HttpMethod.GET, ROTA_AGENDAMENTOS_MEDICO)
+                            .hasAnyRole(ROLE_ADMIN, ROLE_ATENDENTE, ROLE_MEDICO);
+
+                    req.requestMatchers(HttpMethod.GET, ROTA_AGENDAMENTOS_PACIENTE)
+                            .hasAnyRole(ROLE_ADMIN, ROLE_ATENDENTE, ROLE_MEDICO, ROLE_PACIENTE);
+
+                    req.requestMatchers(HttpMethod.PUT, ROTA_AGENDAMENTOS_ID)
+                            .hasAnyRole(ROLE_ADMIN, ROLE_ATENDENTE, ROLE_MEDICO);
+
+                    req.requestMatchers(HttpMethod.PATCH, ROTA_AGENDAMENTOS_CANCELAR)
+                            .hasAnyRole(ROLE_ADMIN, ROLE_ATENDENTE, ROLE_PACIENTE);
+
+                    req.requestMatchers(HttpMethod.PATCH, ROTA_AGENDAMENTOS_CONFIRMAR)
+                            .hasAnyRole(ROLE_ADMIN, ROLE_ATENDENTE);
+
+                    req.requestMatchers(HttpMethod.PATCH, ROTA_AGENDAMENTOS_REALIZAR)
+                            .hasAnyRole(ROLE_ADMIN, ROLE_MEDICO);
+
+                    req.requestMatchers(HttpMethod.DELETE, ROTA_AGENDAMENTOS_ID)
+                            .hasAnyRole(ROLE_ADMIN, ROLE_ATENDENTE);
+
                     // Qualquer outra rota não mapeada explicitamente será negada por segurança
                     req.anyRequest().denyAll();
                 })
@@ -123,7 +218,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
 

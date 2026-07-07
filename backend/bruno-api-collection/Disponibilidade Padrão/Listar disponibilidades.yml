@@ -1,0 +1,17 @@
+info:
+  name: Listar disponibilidades
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{API_URL}}/disponibilidades-padrao"
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

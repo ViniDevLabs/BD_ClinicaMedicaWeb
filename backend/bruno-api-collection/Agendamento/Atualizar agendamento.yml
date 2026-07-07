@@ -1,0 +1,28 @@
+info:
+  name: Atualizar agendamento
+  type: http
+  seq: 6
+
+http:
+  method: PUT
+  url: "{{API_URL}}/agendamentos/1"
+  body:
+    type: json
+    data: |-
+      {
+        "idPaciente": 3,
+        "idAtendente": 4,
+        "idMedico": 2,
+        "idAgendamentoPai": null,
+        "dataHora": "2026-07-10T15:00:00",
+        "status": "CONFIRMADO"
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

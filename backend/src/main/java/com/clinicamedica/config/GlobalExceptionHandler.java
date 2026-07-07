@@ -38,6 +38,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("erro", ex.getMessage()));
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Object> handleIllegalArgument(IllegalArgumentException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("erro", ex.getMessage()));
+    }
+
     @ExceptionHandler(CredenciaisInvalidasException.class)
     public ResponseEntity<Object> handleCredenciaisInvalidas(CredenciaisInvalidasException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
