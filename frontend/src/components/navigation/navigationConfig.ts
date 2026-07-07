@@ -2,9 +2,11 @@ import { type Role } from "@/types/usuario";
 import {
   LayoutDashboard,
   Users,
-  UserRound,
+  UserCog,
   Stethoscope,
   Calendar,
+  FileText,
+  ListTodo,
 } from "lucide-react";
 
 export interface NavItem {
@@ -15,13 +17,15 @@ export interface NavItem {
 
 export const ROLE_NAVIGATION: Record<Role, NavItem[]> = {
   ADMINISTRADOR: [
-    { title: "Dashboard Admin", path: "/admin", icon: LayoutDashboard },
-    { title: "Médicos", path: "/admin/medicos", icon: Stethoscope },
-    { title: "Pacientes", path: "/admin/pacientes", icon: Users },
+    { title: "Dashboard", path: "/admin", icon: LayoutDashboard },
+    { title: "Gerenciar Médicos", path: "/admin/medicos", icon: Stethoscope },
+    { title: "Gerenciar Pacientes", path: "/admin/pacientes", icon: Users },
+    { title: "Gerenciar Atendentes", path: "/admin/atendentes", icon: UserCog },
   ],
   MEDICO: [
-    { title: "Dashboard Médico", path: "/medico", icon: LayoutDashboard },
-    { title: "Consultas", path: "/medico/consultas", icon: Calendar },
+    { title: "Painel Médico", path: "/medico", icon: LayoutDashboard },
+    { title: "Agenda de Consultas", path: "/medico/consultas", icon: Calendar },
+    { title: "Meus Pacientes", path: "/medico/pacientes", icon: Users },
   ],
   ATENDENTE: [
     {
@@ -29,10 +33,16 @@ export const ROLE_NAVIGATION: Record<Role, NavItem[]> = {
       path: "/atendente",
       icon: LayoutDashboard,
     },
-    { title: "Agendamentos", path: "/atendente/agendamentos", icon: Calendar },
+    {
+      title: "Controle de Agendamentos",
+      path: "/atendente/agendamentos",
+      icon: Calendar,
+    },
+    { title: "Fila de Triagem", path: "/atendente/triagem", icon: ListTodo },
   ],
   PACIENTE: [
-    { title: "Meu Painel", path: "/paciente", icon: LayoutDashboard },
-    { title: "Minhas Consultas", path: "/paciente/consultas", icon: UserRound },
+    { title: "Meu Resumo", path: "/paciente", icon: LayoutDashboard },
+    { title: "Minhas Consultas", path: "/paciente/consultas", icon: Calendar },
+    { title: "Resultados de Exames", path: "/paciente/exames", icon: FileText },
   ],
 };

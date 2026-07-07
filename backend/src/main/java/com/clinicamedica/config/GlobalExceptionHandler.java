@@ -4,13 +4,17 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.clinicamedica.exception.CredenciaisInvalidasException;
 import com.clinicamedica.exception.TokenInvalidoException;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -61,5 +65,31 @@ public class GlobalExceptionHandler {
                 .body(Map.of(
                         "erro", "Acesso Proibido (403)",
                         "detalhe", ex.getMessage()));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Object> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        String erroPrincipal = ex.getBindingResult().getFieldErrors().stream()
+                .findFirst()
+                .map(fieldError -> {
+                    String mensagem = fieldError.getDefaultMessage();
+                    return mensagem != null ? mensagem : "Dados inválidos na requisição.";
+                })
+                .orElse("Dados inválidos na requisição.");
+
+        Map<String, String> camposComErro = new LinkedHashMap<>();
+        for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
+            camposComErro.merge(
+                    fieldError.getField(),
+                    Objects.requireNonNullElse(
+                            fieldError.getDefaultMessage(),
+                            "Mensagem não informada."),
+                    (m1, m2) -> m1 + ", " + m2);
+        }
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of(
+                        "erro", erroPrincipal,
+                        "detalhes", camposComErro));
     }
 }

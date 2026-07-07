@@ -12,7 +12,7 @@ public record MedicoRequestDTO(
         @NotBlank @CPF String cpf,
         @NotBlank String nome,
         @NotBlank @Email String email,
-        @NotBlank String senha,
+        String senha,
         @NotNull LocalDate dataNascimento,
         Integer ehAdministrador,
         @NotNull Integer numero,

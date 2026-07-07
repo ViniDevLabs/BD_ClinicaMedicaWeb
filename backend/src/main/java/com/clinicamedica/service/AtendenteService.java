@@ -35,7 +35,12 @@ public class AtendenteService {
         if (pessoaExistente.isPresent()) {
             pessoaParaVincular = pessoaExistente.get();
         } else {
-            String senhaHasheada = passwordEncoder.encode(atendente.getPessoa().getSenha());
+            String senhaCrua = atendente.getPessoa().getSenha();
+            if (senhaCrua == null || senhaCrua.trim().isEmpty()) {
+                throw new IllegalArgumentException("A senha é obrigatória para novos cadastros.");
+            }
+
+            String senhaHasheada = passwordEncoder.encode(senhaCrua);
 
             Pessoa novaPessoa = new Pessoa.Builder()
                     .cpf(atendente.getPessoa().getCpf())
@@ -60,7 +65,6 @@ public class AtendenteService {
 
     @Transactional
     public void excluirAtendente(Integer id) {
-        // Valida a existência do atendente
         buscarPorId(id);
 
         atendenteRepository.delete(id);
@@ -77,16 +81,24 @@ public class AtendenteService {
     }
 
     public Atendente buscarPorId(Integer id) {
+        SecurityUtils.verificarPermissaoOuProprioId(id, "ADMINISTRADOR", "ATENDENTE");
         return atendenteRepository.findById(id)
                 .orElseThrow(() -> new EmptyResultDataAccessException("Atendente não encontrado", 1));
     }
 
     @Transactional
     public Atendente atualizarAtendente(Integer id, Atendente atendenteAtualizado) {
-        SecurityUtils.verificarPermissaoOuProprioId(id, "ADMINISTRADOR");
+        SecurityUtils.verificarPermissaoOuProprioId(id, "ADMINISTRADOR", "ATENDENTE");
 
         Atendente existente = buscarPorId(id);
         atendenteAtualizado.getPessoa().setId(existente.getPessoa().getId());
+
+        String novaSenha = atendenteAtualizado.getPessoa().getSenha();
+        if (novaSenha != null && !novaSenha.trim().isEmpty()) {
+            atendenteAtualizado.getPessoa().setSenha(passwordEncoder.encode(novaSenha));
+        } else {
+            atendenteAtualizado.getPessoa().setSenha(existente.getPessoa().getSenha());
+        }
 
         pessoaRepository.update(atendenteAtualizado.getPessoa());
         atendenteRepository.update(atendenteAtualizado);

@@ -35,7 +35,12 @@ public class PacienteService {
         if (pessoaExistente.isPresent()) {
             pessoaParaVincular = pessoaExistente.get();
         } else {
-            String senhaHasheada = passwordEncoder.encode(paciente.getPessoa().getSenha());
+            String senhaCrua = paciente.getPessoa().getSenha();
+            if (senhaCrua == null || senhaCrua.trim().isEmpty()) {
+                throw new IllegalArgumentException("A senha é obrigatória para novos cadastros.");
+            }
+
+            String senhaHasheada = passwordEncoder.encode(senhaCrua);
 
             Pessoa novaPessoa = new Pessoa.Builder()
                     .cpf(paciente.getPessoa().getCpf())
@@ -61,7 +66,6 @@ public class PacienteService {
 
     @Transactional
     public void excluirPaciente(Integer id) {
-        // Valida a existência do paciente
         buscarPorId(id);
 
         pacienteRepository.delete(id);
@@ -89,6 +93,13 @@ public class PacienteService {
 
         Paciente existente = buscarPorId(id);
         pacienteAtualizado.getPessoa().setId(existente.getPessoa().getId());
+
+        String novaSenha = pacienteAtualizado.getPessoa().getSenha();
+        if (novaSenha != null && !novaSenha.trim().isEmpty()) {
+            pacienteAtualizado.getPessoa().setSenha(passwordEncoder.encode(novaSenha));
+        } else {
+            pacienteAtualizado.getPessoa().setSenha(existente.getPessoa().getSenha());
+        }
 
         pessoaRepository.update(pacienteAtualizado.getPessoa());
         pacienteRepository.update(pacienteAtualizado);

@@ -54,6 +54,10 @@ public class Pessoa {
         this.id = id;
     }
 
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
     public static class Builder {
         private Integer id;
         private String cpf;

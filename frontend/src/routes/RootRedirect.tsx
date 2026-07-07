@@ -1,5 +1,21 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import type { Role } from "@/types/usuario";
+
+export const getRolePath = (role: Role) => {
+  switch (role) {
+    case "ADMINISTRADOR":
+      return "/admin";
+    case "MEDICO":
+      return "/medico";
+    case "ATENDENTE":
+      return "/atendente";
+    case "PACIENTE":
+      return "/paciente";
+    default:
+      return "/forbidden";
+  }
+};
 
 export function RootRedirect() {
   const { usuario } = useAuth();
@@ -8,17 +24,9 @@ export function RootRedirect() {
     return <Navigate to="/login" replace />;
   }
 
-  if (usuario.perfis.includes("ADMINISTRADOR"))
-    return <Navigate to="/admin" replace />;
+  if (usuario.perfis.length > 1) {
+    return <Navigate to="/selecionar-perfil" replace />;
+  }
 
-  if (usuario.perfis.includes("MEDICO"))
-    return <Navigate to="/medico" replace />;
-
-  if (usuario.perfis.includes("ATENDENTE"))
-    return <Navigate to="/atendente" replace />;
-
-  if (usuario.perfis.includes("PACIENTE"))
-    return <Navigate to="/paciente" replace />;
-
-  return <Navigate to="/forbidden" replace />;
+  return <Navigate to={getRolePath(usuario.perfis[0])} replace />;
 }

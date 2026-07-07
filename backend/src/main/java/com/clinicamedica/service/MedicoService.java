@@ -35,7 +35,12 @@ public class MedicoService {
         if (pessoaExistente.isPresent()) {
             pessoaParaVincular = pessoaExistente.get();
         } else {
-            String senhaHasheada = passwordEncoder.encode(medico.getPessoa().getSenha());
+            String senhaCrua = medico.getPessoa().getSenha();
+            if (senhaCrua == null || senhaCrua.trim().isEmpty()) {
+                throw new IllegalArgumentException("A senha é obrigatória para novos cadastros.");
+            }
+
+            String senhaHasheada = passwordEncoder.encode(senhaCrua);
 
             Pessoa novaPessoa = new Pessoa.Builder()
                     .cpf(medico.getPessoa().getCpf())
@@ -89,6 +94,14 @@ public class MedicoService {
 
         Medico existente = buscarPorId(id);
         medico.getPessoa().setId(existente.getPessoa().getId());
+
+        String novaSenha = medico.getPessoa().getSenha();
+
+        if (novaSenha != null && !novaSenha.trim().isEmpty()) {
+            medico.getPessoa().setSenha(passwordEncoder.encode(novaSenha));
+        } else {
+            medico.getPessoa().setSenha(existente.getPessoa().getSenha());
+        }
 
         pessoaRepository.update(medico.getPessoa());
         medicoRepository.update(medico);

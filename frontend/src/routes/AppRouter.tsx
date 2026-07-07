@@ -2,41 +2,70 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { PrivateRoute } from "./PrivateRoute";
 import { RoleRoute } from "./RoleRoute";
 import { RootRedirect } from "./RootRedirect";
-import { LoginPage } from "@/pages/Login";
+import { AppLayout } from "@/components/layout/AppLayout";
+
+import { Login } from "@/pages/auth/Login";
+import { CadastroPaciente } from "@/pages/auth/CadastroPaciente";
+import { SelecaoPerfil } from "@/pages/auth/SelecaoPerfil";
+import { DashboardAdmin } from "@/pages/admin/DashboardAdmin";
+import { GerenciarAtendentes } from "@/pages/admin/GerenciarAtendentes";
+import { GerenciarMedicos } from "@/pages/admin/GerenciarMedicos";
+import { GerenciarPacientes } from "@/pages/admin/GerenciarPacientes";
+import { FormularioMedico } from "@/pages/admin/FormularioMedico";
 
 export function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/cadastro" element={<div>Cadastro (Em breve)</div>} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/cadastro" element={<CadastroPaciente />} />
 
         <Route element={<PrivateRoute />}>
-          <Route path="/" element={<RootRedirect />} />
+          <Route element={<AppLayout />}>
+            <Route path="/" element={<RootRedirect />} />
+            <Route path="/selecionar-perfil" element={<SelecaoPerfil />} />
 
-          <Route element={<RoleRoute allowedRoles={["ADMINISTRADOR"]} />}>
-            <Route
-              path="/admin"
-              element={<div>Dashboard do Administrador</div>}
-            />
-          </Route>
+            <Route element={<RoleRoute allowedRoles={["ADMINISTRADOR"]} />}>
+              <Route path="/admin" element={<DashboardAdmin />} />
 
-          <Route element={<RoleRoute allowedRoles={["MEDICO"]} />}>
-            <Route path="/medico" element={<div>Dashboard do Médico</div>} />
-          </Route>
+              <Route path="/admin/medicos" element={<GerenciarMedicos />} />
+              <Route
+                path="/admin/medicos/novo"
+                element={<FormularioMedico />}
+              />
+              <Route
+                path="/admin/medicos/:id/editar"
+                element={<FormularioMedico />}
+              />
 
-          <Route element={<RoleRoute allowedRoles={["ATENDENTE"]} />}>
-            <Route
-              path="/atendente"
-              element={<div>Dashboard da Atendente</div>}
-            />
-          </Route>
+              <Route path="/admin/pacientes" element={<GerenciarPacientes />} />
+              <Route
+                path="/admin/atendentes"
+                element={<GerenciarAtendentes />}
+              />
+              <Route path="/admin/pacientes" element={<GerenciarPacientes />} />
+              <Route
+                path="/admin/atendentes"
+                element={<GerenciarAtendentes />}
+              />
+            </Route>
+            <Route element={<RoleRoute allowedRoles={["MEDICO"]} />}>
+              <Route path="/medico" element={<div>Dashboard do Médico</div>} />
+            </Route>
 
-          <Route element={<RoleRoute allowedRoles={["PACIENTE"]} />}>
-            <Route
-              path="/paciente"
-              element={<div>Dashboard do Paciente</div>}
-            />
+            <Route element={<RoleRoute allowedRoles={["ATENDENTE"]} />}>
+              <Route
+                path="/atendente"
+                element={<div>Dashboard da Atendente</div>}
+              />
+            </Route>
+
+            <Route element={<RoleRoute allowedRoles={["PACIENTE"]} />}>
+              <Route
+                path="/paciente"
+                element={<div>Dashboard do Paciente</div>}
+              />
+            </Route>
           </Route>
         </Route>
 
