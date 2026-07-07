@@ -112,6 +112,11 @@ public class MedicoRepository {
         return !result.isEmpty() ? Optional.of(result.get(0)) : Optional.empty();
     }
 
+    public void lockById(Integer id) {
+        String sql = "SELECT id_pessoa FROM Medico WHERE id_pessoa = ? FOR UPDATE";
+        jdbcTemplate.queryForObject(sql, Integer.class, id);
+    }
+
     public void delete(Integer id) {
         jdbcTemplate.update("DELETE FROM Medico WHERE id_pessoa = ?", id);
     }

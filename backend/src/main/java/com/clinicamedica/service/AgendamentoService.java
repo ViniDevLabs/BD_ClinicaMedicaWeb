@@ -52,6 +52,9 @@ public class AgendamentoService {
             throw new IllegalArgumentException("Novo agendamento deve iniciar com status AGENDADO.");
         }
 
+        Integer idMedico = agendamento.getMedico().getPessoa().getId();
+        medicoRepository.lockById(idMedico);
+
         validar(agendamento, null);
         return agendamentoRepository.save(agendamento);
     }
@@ -83,6 +86,8 @@ public class AgendamentoService {
     @Transactional
     public Agendamento atualizar(Integer id, Agendamento agendamento) {
         Agendamento existente = buscarPorId(id);
+        Integer idMedico = agendamento.getMedico().getPessoa().getId();
+        medicoRepository.lockById(idMedico);
 
         if (existente.getStatus() != agendamento.getStatus()) {
             validarTransicaoStatus(existente.getStatus(), agendamento.getStatus());
