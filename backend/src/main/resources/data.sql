@@ -14,5 +14,11 @@ INSERT IGNORE INTO Paciente (id_pessoa, convenio, num_carteirinha) VALUES (3, 'U
 
 INSERT IGNORE INTO Atendente (id_pessoa, matricula) VALUES (4, 'ATND-001'), (5, 'ATND-005');
 
-INSERT IGNORE INTO Agendamento (id_agendamento, id_paciente, id_medico, id_atendente, data_hora, status) 
+INSERT IGNORE INTO Agendamento (id_agendamento, id_paciente, id_medico, id_atendente, data_hora, status)
 VALUES (1, 3, 2, 4, '2026-07-10 14:30:00', 'Agendado');
+
+INSERT IGNORE INTO Exame (id_exame, id_agendamento, nome_exame, data_solicitacao, local_realizacao, observacoes_medicas, status)
+VALUES (1, 1, 'Hemograma completo', '2026-07-10', 'Interno', 'Solicitado em jejum de 8 horas.', 'Solicitado');
+
+INSERT IGNORE INTO Prontuario_Clinico (id_prontuario, id_agendamento, diagnostico, prescricao, registro_observacoes)
+VALUES (1, 1, 'Faringite viral', 'Repouso e hidratação. Analgésico se dor.', 'Paciente orientado a retornar em 7 dias se sintomas persistirem.');

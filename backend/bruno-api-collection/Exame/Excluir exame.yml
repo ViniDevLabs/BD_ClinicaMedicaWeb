@@ -1,0 +1,17 @@
+info:
+  name: Excluir exame
+  type: http
+  seq: 9
+
+http:
+  method: DELETE
+  url: "{{API_URL}}/exames/1"
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,29 @@
+info:
+  name: Criar exame
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{API_URL}}/exames"
+  body:
+    type: json
+    data: |-
+      {
+        "idAgendamento": 1,
+        "nomeExame": "Hemograma completo",
+        "dataSolicitacao": "2026-07-10",
+        "localRealizacao": "INTERNO",
+        "observacoesMedicas": "Solicitado em jejum de 8 horas.",
+        "arquivoLaudoPath": null,
+        "status": "SOLICITADO"
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

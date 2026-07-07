@@ -49,6 +49,17 @@ public class SecurityConfig {
     private static final String ROTA_AGENDAMENTOS_CONFIRMAR = "/api/agendamentos/{id}/confirmar";
     private static final String ROTA_AGENDAMENTOS_REALIZAR = "/api/agendamentos/{id}/realizar";
 
+    private static final String ROTA_EXAMES = "/api/exames";
+    private static final String ROTA_EXAMES_ID = "/api/exames/{id}";
+    private static final String ROTA_EXAMES_AGENDAMENTO = "/api/exames/agendamento/{idAgendamento}";
+    private static final String ROTA_EXAMES_CANCELAR = "/api/exames/{id}/cancelar";
+    private static final String ROTA_EXAMES_ANEXAR_LAUDO = "/api/exames/{id}/anexar-laudo";
+    private static final String ROTA_EXAMES_CONCLUIR = "/api/exames/{id}/concluir";
+
+    private static final String ROTA_PRONTUARIOS = "/api/prontuarios";
+    private static final String ROTA_PRONTUARIOS_ID = "/api/prontuarios/{id}";
+    private static final String ROTA_PRONTUARIOS_AGENDAMENTO = "/api/prontuarios/agendamento/{idAgendamento}";
+
     private static final String ROLE_ADMIN = "ADMINISTRADOR";
     private static final String ROLE_MEDICO = "MEDICO";
     private static final String ROLE_ATENDENTE = "ATENDENTE";
@@ -205,6 +216,57 @@ public class SecurityConfig {
 
                     req.requestMatchers(HttpMethod.DELETE, ROTA_AGENDAMENTOS_ID)
                             .hasAnyRole(ROLE_ADMIN, ROLE_ATENDENTE);
+
+                    // ===================================================
+                    // EXAMES
+                    // ===================================================
+                    req.requestMatchers(HttpMethod.POST, ROTA_EXAMES)
+                            .hasAnyRole(ROLE_ADMIN, ROLE_MEDICO, ROLE_ATENDENTE);
+
+                    req.requestMatchers(HttpMethod.GET, ROTA_EXAMES)
+                            .authenticated();
+
+                    req.requestMatchers(HttpMethod.GET, ROTA_EXAMES_ID)
+                            .authenticated();
+
+                    req.requestMatchers(HttpMethod.GET, ROTA_EXAMES_AGENDAMENTO)
+                            .authenticated();
+
+                    req.requestMatchers(HttpMethod.PUT, ROTA_EXAMES_ID)
+                            .hasAnyRole(ROLE_ADMIN, ROLE_MEDICO, ROLE_ATENDENTE);
+
+                    req.requestMatchers(HttpMethod.PATCH, ROTA_EXAMES_CANCELAR)
+                            .hasAnyRole(ROLE_ADMIN, ROLE_MEDICO, ROLE_ATENDENTE);
+
+                    req.requestMatchers(HttpMethod.PATCH, ROTA_EXAMES_ANEXAR_LAUDO)
+                            .hasAnyRole(ROLE_ADMIN, ROLE_MEDICO);
+
+                    req.requestMatchers(HttpMethod.PATCH, ROTA_EXAMES_CONCLUIR)
+                            .hasAnyRole(ROLE_ADMIN, ROLE_MEDICO);
+
+                    req.requestMatchers(HttpMethod.DELETE, ROTA_EXAMES_ID)
+                            .hasRole(ROLE_ADMIN);
+
+                    // ===================================================
+                    // PRONTUÁRIOS CLÍNICOS
+                    // ===================================================
+                    req.requestMatchers(HttpMethod.POST, ROTA_PRONTUARIOS)
+                            .hasAnyRole(ROLE_ADMIN, ROLE_MEDICO);
+
+                    req.requestMatchers(HttpMethod.GET, ROTA_PRONTUARIOS)
+                            .authenticated();
+
+                    req.requestMatchers(HttpMethod.GET, ROTA_PRONTUARIOS_ID)
+                            .authenticated();
+
+                    req.requestMatchers(HttpMethod.GET, ROTA_PRONTUARIOS_AGENDAMENTO)
+                            .authenticated();
+
+                    req.requestMatchers(HttpMethod.PUT, ROTA_PRONTUARIOS_ID)
+                            .hasAnyRole(ROLE_ADMIN, ROLE_MEDICO);
+
+                    req.requestMatchers(HttpMethod.DELETE, ROTA_PRONTUARIOS_ID)
+                            .hasRole(ROLE_ADMIN);
 
                     // Qualquer outra rota não mapeada explicitamente será negada por segurança
                     req.anyRequest().denyAll();
