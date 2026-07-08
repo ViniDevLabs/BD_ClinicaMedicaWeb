@@ -6,9 +6,20 @@ export type StatusAgendamento =
 
 export interface AgendamentoResponse {
   idAgendamento: number;
-  idPaciente: number;
-  idAtendente: number | null;
-  idMedico: number;
+  paciente: {
+    idPaciente: number;
+    nome: string;
+    cpf: string;
+  };
+  atendente: {
+    idAtendente: number;
+    nome: string;
+  } | null;
+  medico: {
+    idMedico: number;
+    nome: string;
+    especialidades: string[];
+  };
   idAgendamentoPai: number | null;
   dataHora: string; // ISO LocalDateTime, ex.: "2026-07-10T14:30:00"
   status: StatusAgendamento;

@@ -32,10 +32,8 @@ import {
 import { Plus, Pencil, Trash2, Search } from "lucide-react";
 import { toast } from "sonner";
 import { formatarCPF } from "@/lib/formatters";
-import {
-  medicoService,
-  type MedicoResponse,
-} from "@/services/medico/medicoService";
+import { medicoService } from "@/services/medico/medicoService";
+import type { MedicoResponse } from "@/types/medico";
 
 export function GerenciarMedicos() {
   const navigate = useNavigate();

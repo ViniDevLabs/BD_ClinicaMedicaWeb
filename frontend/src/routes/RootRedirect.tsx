@@ -9,7 +9,7 @@ export const getRolePath = (role: Role) => {
     case "MEDICO":
       return "/medico";
     case "ATENDENTE":
-      return "/atendente";
+      return "/atendente/agendamentos";
     case "PACIENTE":
       return "/paciente";
     default:

@@ -16,6 +16,7 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,22 +25,61 @@ public class AgendamentoRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
+    private static final String BASE_QUERY = "SELECT a.*, " +
+            "p_pac.nome AS paciente_nome, p_pac.cpf AS paciente_cpf, " +
+            "p_med.nome AS medico_nome, GROUP_CONCAT(me.especialidade) AS medico_especialidades, " +
+            "p_atd.nome AS atendente_nome " +
+            "FROM Agendamento a " +
+            "INNER JOIN Paciente pac ON a.id_paciente = pac.id_pessoa " +
+            "INNER JOIN Pessoa p_pac ON pac.id_pessoa = p_pac.id " +
+            "INNER JOIN Medico med ON a.id_medico = med.id_pessoa " +
+            "INNER JOIN Pessoa p_med ON med.id_pessoa = p_med.id " +
+            "LEFT JOIN Medico_Especialidade me ON med.id_pessoa = me.id_medico " +
+            "LEFT JOIN Atendente atd ON a.id_atendente = atd.id_pessoa " +
+            "LEFT JOIN Pessoa p_atd ON atd.id_pessoa = p_atd.id ";
+
+    private static final String GROUP_BY = " GROUP BY a.id_agendamento ";
+
+    private static final String ORDER_BY = "  ORDER BY a.data_hora";
+
     public AgendamentoRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     private final RowMapper<Agendamento> rowMapper = (rs, rowNum) -> {
-        Paciente paciente = new Paciente.Builder()
-                .pessoa(new Pessoa.Builder().id(rs.getInt("id_paciente")).build())
+        Pessoa pessoaPaciente = new Pessoa.Builder()
+                .id(rs.getInt("id_paciente"))
+                .nome(rs.getString("paciente_nome"))
+                .cpf(rs.getString("paciente_cpf"))
                 .build();
+        Paciente paciente = new Paciente.Builder().pessoa(pessoaPaciente).build();
 
         Integer idAtendente = rs.getObject("id_atendente", Integer.class);
-        Atendente atendente = idAtendente != null
-                ? new Atendente.Builder().pessoa(new Pessoa.Builder().id(idAtendente).build()).build()
-                : null;
+        Atendente atendente = null;
+        if (idAtendente != null) {
+            Pessoa pessoaAtendente = new Pessoa.Builder()
+                    .id(idAtendente)
+                    .nome(rs.getString("atendente_nome"))
+                    .build();
+            atendente = new Atendente.Builder().pessoa(pessoaAtendente).build();
+        }
+
+        Pessoa pessoaMedico = new Pessoa.Builder()
+                .id(rs.getInt("id_medico"))
+                .nome(rs.getString("medico_nome"))
+                .build();
+
+        String espStr = rs.getString("medico_especialidades");
+        List<String> especialidades = new ArrayList<>();
+        if (espStr != null && !espStr.trim().isEmpty()) {
+            for (String especialidade : espStr.split(",")) {
+                especialidades.add(especialidade.trim());
+            }
+        }
 
         Medico medico = new Medico.Builder()
-                .pessoa(new Pessoa.Builder().id(rs.getInt("id_medico")).build())
+                .pessoa(pessoaMedico)
+                .especialidades(especialidades)
                 .build();
 
         return new Agendamento.Builder()
@@ -70,7 +110,14 @@ public class AgendamentoRepository {
             return ps;
         }, keyHolder);
 
-        return findById(keyHolder.getKey().intValue()).orElse(agendamento);
+        Number key = keyHolder.getKey();
+
+        if (key == null) {
+            throw new IllegalStateException("Não foi possível obter o ID do agendamento recém-criado.");
+        }
+
+        return findById(key.intValue()).orElseThrow(
+                () -> new IllegalStateException("Agendamento criado, mas não encontrado após a inserção."));
     }
 
     public void update(Agendamento agendamento) {
@@ -92,27 +139,28 @@ public class AgendamentoRepository {
     }
 
     public List<Agendamento> findAll() {
-        return jdbcTemplate.query("SELECT * FROM Agendamento", rowMapper);
+        return jdbcTemplate.query(BASE_QUERY + GROUP_BY, rowMapper);
     }
 
     public Optional<Agendamento> findById(Integer id) {
-        String sql = "SELECT * FROM Agendamento WHERE id_agendamento = ?";
+        String sql = BASE_QUERY + " WHERE a.id_agendamento = ?" + GROUP_BY;
         return jdbcTemplate.query(sql, rowMapper, id).stream().findFirst();
     }
 
     public List<Agendamento> findByMedicoId(Integer idMedico) {
-        String sql = "SELECT * FROM Agendamento WHERE id_medico = ? ORDER BY data_hora";
+        String sql = BASE_QUERY + " WHERE a.id_medico = ?" + GROUP_BY + ORDER_BY;
         return jdbcTemplate.query(sql, rowMapper, idMedico);
     }
 
     public List<Agendamento> findByPacienteId(Integer idPaciente) {
-        String sql = "SELECT * FROM Agendamento WHERE id_paciente = ? ORDER BY data_hora";
+        String sql = BASE_QUERY + " WHERE a.id_paciente = ?" + GROUP_BY + ORDER_BY;
         return jdbcTemplate.query(sql, rowMapper, idPaciente);
     }
 
     public List<Agendamento> findAtivosByMedicoIdAndData(Integer idMedico, LocalDate data) {
-        String sql = "SELECT * FROM Agendamento "
-                + "WHERE id_medico = ? AND DATE(data_hora) = ? AND status <> ? ORDER BY data_hora";
+        String sql = BASE_QUERY +
+                " WHERE a.id_medico = ? AND DATE(a.data_hora) = ? AND a.status <> ? " +
+                GROUP_BY + ORDER_BY;
         return jdbcTemplate.query(sql, rowMapper, idMedico, data, StatusAgendamento.CANCELADO.getValorBanco());
     }
 

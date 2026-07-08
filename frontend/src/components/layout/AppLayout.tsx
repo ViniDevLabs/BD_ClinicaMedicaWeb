@@ -4,14 +4,17 @@ import { AppSidebar } from "../navigation/AppSidebar";
 
 export function AppLayout() {
   const location = useLocation();
-  const estaNaTelaDeSelecao = location.pathname === "/selecionar-perfil";
+
+  const ocultarSidebar =
+    location.pathname === "/selecionar-perfil" ||
+    location.pathname.startsWith("/atendente/agendamentos");
 
   return (
     <div className="h-screen bg-slate-50 flex flex-col overflow-hidden">
       <AppHeader />
 
       <div className="flex flex-1 overflow-hidden">
-        {!estaNaTelaDeSelecao && <AppSidebar />}
+        {!ocultarSidebar && <AppSidebar />}
 
         <main className="flex-1 overflow-y-auto p-6">
           <Outlet />

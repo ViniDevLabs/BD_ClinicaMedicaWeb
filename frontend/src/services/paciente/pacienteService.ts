@@ -1,18 +1,16 @@
 import { api } from "@/api/axios";
-
-export interface CadastroPacienteRequest {
-  cpf: string;
-  nome: string;
-  email: string;
-  senha?: string;
-  dataNascimento: string;
-  ehAdministrador: number;
-  convenio?: string;
-  numCarteirinha?: string;
-}
+import type {
+	CadastroPacienteRequest,
+	PacienteResponse,
+} from "@/types/paciente";
 
 export const pacienteService = {
-  async cadastrar(dados: CadastroPacienteRequest): Promise<void> {
-    await api.post("/pacientes", dados);
-  },
+	async cadastrar(dados: CadastroPacienteRequest): Promise<void> {
+		await api.post("/pacientes", dados);
+	},
+
+	listar: async () => (await api.get<PacienteResponse[]>("/pacientes")).data,
+
+	buscarPorId: async (id: number) =>
+		(await api.get<PacienteResponse>(`/pacientes/${id}`)).data,
 };

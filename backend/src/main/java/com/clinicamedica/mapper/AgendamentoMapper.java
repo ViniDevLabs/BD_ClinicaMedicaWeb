@@ -2,6 +2,9 @@ package com.clinicamedica.mapper;
 
 import com.clinicamedica.dto.request.AgendamentoRequestDTO;
 import com.clinicamedica.dto.response.AgendamentoResponseDTO;
+import com.clinicamedica.dto.response.AtendenteResumoDTO;
+import com.clinicamedica.dto.response.MedicoResumoDTO;
+import com.clinicamedica.dto.response.PacienteResumoDTO;
 import com.clinicamedica.model.Agendamento;
 import com.clinicamedica.model.Atendente;
 import com.clinicamedica.model.Medico;
@@ -41,15 +44,31 @@ public class AgendamentoMapper {
     }
 
     public static AgendamentoResponseDTO toResponse(Agendamento agendamento) {
-        Integer idAtendente = agendamento.getAtendente() != null
-                ? agendamento.getAtendente().getPessoa().getId()
-                : null;
+        if (agendamento == null)
+            return null;
+
+        PacienteResumoDTO pacienteDTO = new PacienteResumoDTO(
+                agendamento.getPaciente().getPessoa().getId(),
+                agendamento.getPaciente().getPessoa().getNome(),
+                agendamento.getPaciente().getPessoa().getCpf());
+
+        MedicoResumoDTO medicoDTO = new MedicoResumoDTO(
+                agendamento.getMedico().getPessoa().getId(),
+                agendamento.getMedico().getPessoa().getNome(),
+                agendamento.getMedico().getEspecialidades());
+
+        AtendenteResumoDTO atendenteDTO = null;
+        if (agendamento.getAtendente() != null && agendamento.getAtendente().getPessoa() != null) {
+            atendenteDTO = new AtendenteResumoDTO(
+                    agendamento.getAtendente().getPessoa().getId(),
+                    agendamento.getAtendente().getPessoa().getNome());
+        }
 
         return new AgendamentoResponseDTO(
                 agendamento.getIdAgendamento(),
-                agendamento.getPaciente().getPessoa().getId(),
-                idAtendente,
-                agendamento.getMedico().getPessoa().getId(),
+                pacienteDTO,
+                atendenteDTO,
+                medicoDTO,
                 agendamento.getIdAgendamentoPai(),
                 agendamento.getDataHora(),
                 agendamento.getStatus());
