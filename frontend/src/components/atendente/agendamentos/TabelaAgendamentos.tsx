@@ -1,4 +1,4 @@
-import { CheckCircle2, XCircle, Clock, X, RefreshCw } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, X, RefreshCw, FlaskConical } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -21,6 +21,7 @@ interface TabelaAgendamentosProps {
   onCheckIn: (id: number) => void;
   onCancelar: (agendamento: AgendamentoResponse) => void;
   onAgendarRetorno: (agendamento: AgendamentoResponse) => void;
+  onGerenciarExames: (agendamento: AgendamentoResponse) => void;
 }
 
 const StatusBadge = ({ status }: { status: StatusAgendamento }) => {
@@ -70,6 +71,7 @@ export function TabelaAgendamentos({
   onCheckIn,
   onCancelar,
   onAgendarRetorno,
+  onGerenciarExames,
 }: TabelaAgendamentosProps) {
   return (
     <div className="border rounded-md bg-white overflow-x-auto">
@@ -134,7 +136,7 @@ export function TabelaAgendamentos({
                   )}
                 </TableCell>
                 <TableCell className="text-right whitespace-nowrap space-x-2">
-                  {agendamento.status === "AGENDADO" ? (
+                  {agendamento.status === "AGENDADO" && (
                     <>
                       <Button
                         variant="default"
@@ -159,11 +161,17 @@ export function TabelaAgendamentos({
                         <X size={14} />
                       </Button>
                     </>
-                  ) : (
-                    agendamento.status === "CONFIRMADO" && (
-                      <Badge variant="secondary">Aguardando Atendimento</Badge>
-                    )
                   )}
+                  {agendamento.status === "CONFIRMADO" && (
+                    <Badge variant="secondary">Aguardando Atendimento</Badge>
+                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onGerenciarExames(agendamento)}
+                  >
+                    <FlaskConical size={14} className="mr-1" /> Exames
+                  </Button>
                 </TableCell>
               </TableRow>
             ))

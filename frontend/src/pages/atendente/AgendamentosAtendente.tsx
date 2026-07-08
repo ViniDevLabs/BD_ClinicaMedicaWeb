@@ -25,6 +25,7 @@ import { FiltrosAgendamento } from "@/components/atendente/agendamentos/FiltrosA
 import { TabelaAgendamentos } from "@/components/atendente/agendamentos/TabelaAgendamentos";
 import { ModalNovoAgendamento } from "@/components/atendente/agendamentos/ModalNovoAgendamento";
 import { ModalNovoPaciente } from "@/components/atendente/agendamentos/ModalNovoPaciente";
+import { ModalExamesAgendamento } from "@/components/atendente/agendamentos/ModalExamesAgendamento";
 
 export function AgendamentosAtendente() {
   const [agendamentos, setAgendamentos] = useState<AgendamentoResponse[]>([]);
@@ -53,6 +54,10 @@ export function AgendamentosAtendente() {
   const [agendamentoParaCancelar, setAgendamentoParaCancelar] =
     useState<AgendamentoResponse | null>(null);
 
+  // Exames do agendamento
+  const [agendamentoExames, setAgendamentoExames] =
+    useState<AgendamentoResponse | null>(null);
+
   const carregarAgendamentos = async () => {
     try {
       setLoading(true);
@@ -67,8 +72,12 @@ export function AgendamentosAtendente() {
       }
 
       if (buscaPaciente) {
-        filtrados = filtrados.filter((ag) =>
-          ag.paciente.nome.toLowerCase().includes(buscaPaciente.toLowerCase()),
+        const termo = buscaPaciente.toLowerCase();
+        const cpfBusca = buscaPaciente.replace(/\D/g, "");
+        filtrados = filtrados.filter(
+          (ag) =>
+            ag.paciente.nome.toLowerCase().includes(termo) ||
+            (cpfBusca !== "" && ag.paciente.cpf.includes(cpfBusca)),
         );
       }
 
@@ -197,6 +206,7 @@ export function AgendamentosAtendente() {
         onCheckIn={handleConfirmarCheckIn}
         onCancelar={abrirModalCancelar}
         onAgendarRetorno={abrirModalAgendarRetorno}
+        onGerenciarExames={setAgendamentoExames}
       />
 
       <ModalNovoAgendamento
@@ -215,6 +225,11 @@ export function AgendamentosAtendente() {
         open={modalNovoPaciente}
         onOpenChange={setModalNovoPaciente}
         onSucesso={handlePacienteCadastrado}
+      />
+
+      <ModalExamesAgendamento
+        agendamento={agendamentoExames}
+        onOpenChange={(open) => !open && setAgendamentoExames(null)}
       />
 
       <AlertDialog

@@ -14,7 +14,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -23,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+import { useAuth } from "@/hooks/useAuth";
 import { agendamentoService } from "@/services/agendamento/agendamentoService";
 import type { AgendamentoResponse } from "@/types/agendamento";
 import type { PacienteResponse } from "@/types/paciente";
@@ -50,13 +50,13 @@ export function ModalNovoAgendamento({
   onSucesso,
   onNovoPaciente,
 }: ModalNovoAgendamentoProps) {
+  const { usuario } = useAuth();
   const [pacienteSelecionado, setPacienteSelecionado] =
     useState<PacienteResponse | null>(null);
   const [medicoSelecionado, setMedicoSelecionado] =
     useState<MedicoResponse | null>(null);
   const [dataAgendamento, setDataAgendamento] = useState("");
   const [horaAgendamento, setHoraAgendamento] = useState("");
-  const [observacoes, setObservacoes] = useState("");
   const [horariosDisponiveis, setHorariosDisponiveis] = useState<string[]>([]);
   const [buscandoHorarios, setBuscandoHorarios] = useState(false);
 
@@ -79,7 +79,6 @@ export function ModalNovoAgendamento({
     setMedicoSelecionado(null);
     setDataAgendamento("");
     setHoraAgendamento("");
-    setObservacoes("");
     setHorariosDisponiveis([]);
   };
 
@@ -129,6 +128,7 @@ export function ModalNovoAgendamento({
       await agendamentoService.criar({
         idPaciente: pacienteSelecionado.id,
         idMedico: medicoSelecionado.id,
+        idAtendente: usuario?.id ?? null,
         idAgendamentoPai: agendamentoPai?.idAgendamento || null,
         dataHora,
         status: "AGENDADO",
@@ -237,16 +237,6 @@ export function ModalNovoAgendamento({
                 </Button>
               </div>
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Observações</Label>
-            <Textarea
-              value={observacoes}
-              onChange={(e) => setObservacoes(e.target.value)}
-              placeholder="Observações sobre o agendamento..."
-              rows={4}
-            />
           </div>
         </div>
 
