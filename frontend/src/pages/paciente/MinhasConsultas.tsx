@@ -164,7 +164,7 @@ export function MinhasConsultas() {
               <ConsultaCard
                 key={c.idAgendamento}
                 consulta={c}
-                medico={medicos.get(c.idMedico)}
+                medico={medicos.get(c.medico.idMedico)}
                 onDetalhes={() =>
                   navigate(`/paciente/consultas/${c.idAgendamento}`)
                 }
@@ -181,7 +181,7 @@ export function MinhasConsultas() {
               <ConsultaCard
                 key={c.idAgendamento}
                 consulta={c}
-                medico={medicos.get(c.idMedico)}
+                medico={medicos.get(c.medico.idMedico)}
                 onDetalhes={() =>
                   navigate(`/paciente/consultas/${c.idAgendamento}`)
                 }
@@ -274,7 +274,7 @@ function ConsultaCard({
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <p className="font-medium text-slate-900">
-                {medico?.nome ?? `Médico #${consulta.idMedico}`}
+                {medico?.nome ?? `Médico #${consulta.medico.idMedico}`}
               </p>
               <Badge className={badge.className}>{badge.label}</Badge>
               {consulta.idAgendamentoPai && (
@@ -291,7 +291,12 @@ function ConsultaCard({
         </div>
 
         <div className="flex shrink-0 flex-wrap gap-2">
-          <Button variant="outline" size="sm" onClick={onDetalhes} className="gap-1.5">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onDetalhes}
+            className="gap-1.5"
+          >
             <Eye size={15} /> Detalhes
           </Button>
           {podeRetornar && (

@@ -17,7 +17,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { CalendarDays, CheckCircle2, Stethoscope, ClipboardList } from "lucide-react";
+import {
+  CalendarDays,
+  CheckCircle2,
+  Stethoscope,
+  ClipboardList,
+} from "lucide-react";
 import { toast } from "sonner";
 import { agendamentoService } from "@/services/agendamento/agendamentoService";
 import { pacienteService } from "@/services/paciente/pacienteService";
@@ -155,8 +160,8 @@ export function AgendaConsultas() {
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <p className="font-medium text-slate-900">
-                          {pacientes.get(c.idPaciente) ??
-                            `Paciente #${c.idPaciente}`}
+                          {pacientes.get(c.paciente.idPaciente) ??
+                            `Paciente #${c.paciente.idPaciente}`}
                         </p>
                         <Badge className={badge.className}>{badge.label}</Badge>
                         {c.idAgendamentoPai && (

@@ -145,12 +145,12 @@ export function DashboardPaciente() {
                   </div>
                   <div>
                     <p className="text-2xl font-semibold">
-                      {medicos.get(proximaConsulta.idMedico)?.nome ??
-                        `Médico #${proximaConsulta.idMedico}`}
+                      {medicos.get(proximaConsulta.medico.idMedico)?.nome ??
+                        `Médico #${proximaConsulta.medico.idMedico}`}
                     </p>
                     <p className="text-slate-300">
                       {medicos
-                        .get(proximaConsulta.idMedico)
+                        .get(proximaConsulta.medico.idMedico)
                         ?.especialidades.join(", ") || "Consulta médica"}
                     </p>
                   </div>

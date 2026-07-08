@@ -110,11 +110,13 @@ export function AtenderConsulta() {
 
         const [dadosPaciente, dadosProntuario, dadosExames, consultasPaciente] =
           await Promise.all([
-            pacienteService.buscarPorId(agendamento.idPaciente).catch(() => null),
+            pacienteService
+              .buscarPorId(agendamento.paciente.idPaciente)
+              .catch(() => null),
             prontuarioService.buscarPorAgendamento(agendamento.idAgendamento),
             exameService.listarPorAgendamento(agendamento.idAgendamento),
             agendamentoService
-              .listarPorPaciente(agendamento.idPaciente)
+              .listarPorPaciente(agendamento.paciente.idPaciente)
               .catch(() => []),
           ]);
 
@@ -240,7 +242,7 @@ export function AtenderConsulta() {
   const badge = statusAgendamentoBadge[consulta.status];
 
   return (
-    <div className="max-w-3xl space-y-6">
+    <div className="space-y-6">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -270,7 +272,7 @@ export function AtenderConsulta() {
             </div>
             <div className="space-y-1">
               <p className="text-lg font-semibold text-slate-900">
-                {paciente?.nome ?? `Paciente #${consulta.idPaciente}`}
+                {paciente?.nome ?? `Paciente #${consulta.paciente.idPaciente}`}
               </p>
               <p className="text-sm text-slate-500">
                 CPF {paciente ? formatarCPF(paciente.cpf) : "-"}
@@ -431,7 +433,10 @@ export function AtenderConsulta() {
                 </div>
                 <div className="space-y-2">
                   <Label>Data de solicitação</Label>
-                  <Input type="date" {...exameForm.register("dataSolicitacao")} />
+                  <Input
+                    type="date"
+                    {...exameForm.register("dataSolicitacao")}
+                  />
                   {exameForm.formState.errors.dataSolicitacao && (
                     <span className="text-sm text-red-500">
                       {exameForm.formState.errors.dataSolicitacao.message}
@@ -454,7 +459,10 @@ export function AtenderConsulta() {
                 >
                   Cancelar
                 </Button>
-                <Button type="submit" disabled={exameForm.formState.isSubmitting}>
+                <Button
+                  type="submit"
+                  disabled={exameForm.formState.isSubmitting}
+                >
                   Solicitar
                 </Button>
               </div>
@@ -496,7 +504,8 @@ export function AtenderConsulta() {
                     {exame.localRealizacao === "INTERNO"
                       ? "Realização interna"
                       : "Realização externa"}{" "}
-                    · Solicitado em {formatarDataIsoParaBr(exame.dataSolicitacao)}
+                    · Solicitado em{" "}
+                    {formatarDataIsoParaBr(exame.dataSolicitacao)}
                   </p>
                   {exame.observacoesMedicas && (
                     <p className="mt-2 text-sm text-slate-600">
@@ -524,8 +533,8 @@ export function AtenderConsulta() {
           <AlertDialogHeader>
             <AlertDialogTitle>Concluir atendimento</AlertDialogTitle>
             <AlertDialogDescription>
-              Confirmar que este atendimento foi realizado? O status passará para
-              "Realizado".
+              Confirmar que este atendimento foi realizado? O status passará
+              para "Realizado".
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
