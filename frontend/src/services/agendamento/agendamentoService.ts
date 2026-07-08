@@ -15,6 +15,10 @@ export const agendamentoService = {
       )
     ).data,
 
+  listarPorMedico: async (idMedico: number) =>
+    (await api.get<AgendamentoResponse[]>(`/agendamentos/medico/${idMedico}`))
+      .data,
+
   buscarPorId: async (id: number) =>
     (await api.get<AgendamentoResponse>(`/agendamentos/${id}`)).data,
 
@@ -34,4 +38,6 @@ export const agendamentoService = {
   confirmarCheckIn: async (id: number) =>
     (await api.patch<AgendamentoResponse>(`/agendamentos/${id}/confirmar`))
       .data,
+  realizar: async (id: number) =>
+    (await api.patch<AgendamentoResponse>(`/agendamentos/${id}/realizar`)).data,
 };

@@ -25,6 +25,13 @@ export function formatarHora(hora: string | undefined): string {
   return hora.slice(0, 5);
 }
 
+export function hojeISO(): string {
+  const d = new Date();
+  const mes = String(d.getMonth() + 1).padStart(2, "0");
+  const dia = String(d.getDate()).padStart(2, "0");
+  return `${d.getFullYear()}-${mes}-${dia}`;
+}
+
 export function mascaraCPFInput(valor: string): string {
   if (!valor) return "";
 
