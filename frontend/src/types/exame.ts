@@ -16,3 +16,11 @@ export interface ExameResponse {
   arquivoLaudoPath: string | null;
   status: StatusExame;
 }
+
+export interface ExameRequest {
+  idAgendamento: number;
+  nomeExame: string;
+  dataSolicitacao: string;
+  localRealizacao: LocalRealizacaoExame;
+  observacoesMedicas?: string | null;
+}

@@ -6,6 +6,7 @@ import {
   Stethoscope,
   Calendar,
   CalendarPlus,
+  CalendarClock,
   FileText,
   ListTodo,
 } from "lucide-react";
@@ -26,7 +27,11 @@ export const ROLE_NAVIGATION: Record<Role, NavItem[]> = {
   MEDICO: [
     { title: "Painel Médico", path: "/medico", icon: LayoutDashboard },
     { title: "Agenda de Consultas", path: "/medico/consultas", icon: Calendar },
-    { title: "Meus Pacientes", path: "/medico/pacientes", icon: Users },
+    {
+      title: "Minha Disponibilidade",
+      path: "/medico/disponibilidade",
+      icon: CalendarClock,
+    },
   ],
   ATENDENTE: [
     {

@@ -17,6 +17,10 @@ import { AgendarConsulta } from "@/pages/paciente/AgendarConsulta";
 import { MinhasConsultas } from "@/pages/paciente/MinhasConsultas";
 import { DetalheConsulta } from "@/pages/paciente/DetalheConsulta";
 import { ResultadosExames } from "@/pages/paciente/ResultadosExames";
+import { DashboardMedico } from "@/pages/medico/DashboardMedico";
+import { AgendaConsultas } from "@/pages/medico/AgendaConsultas";
+import { AtenderConsulta } from "@/pages/medico/AtenderConsulta";
+import { MinhaDisponibilidade } from "@/pages/medico/MinhaDisponibilidade";
 import { Toaster } from "sonner";
 import { FormularioPaciente } from "@/pages/admin/FormularioPaciente";
 import { FormularioAtendente } from "@/pages/admin/FormularioAtendente";
@@ -52,7 +56,16 @@ export function AppRouter() {
               
             </Route>
             <Route element={<RoleRoute allowedRoles={["MEDICO"]} />}>
-              <Route path="/medico" element={<div>Dashboard do Médico</div>} />
+              <Route path="/medico" element={<DashboardMedico />} />
+              <Route path="/medico/consultas" element={<AgendaConsultas />} />
+              <Route
+                path="/medico/consultas/:id"
+                element={<AtenderConsulta />}
+              />
+              <Route
+                path="/medico/disponibilidade"
+                element={<MinhaDisponibilidade />}
+              />
             </Route>
 
             <Route element={<RoleRoute allowedRoles={["ATENDENTE"]} />}>
