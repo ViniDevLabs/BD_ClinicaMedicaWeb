@@ -21,7 +21,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { validarCPF } from "@/lib/validations";
 import { mascaraCPFInput } from "@/lib/formatters";
 
-const pacienteSchema = z.object({
+const atendenteSchema = z.object({
   nome: z.string().min(3, "Nome muito curto"),
   cpf: z
     .string()
@@ -37,13 +37,12 @@ const pacienteSchema = z.object({
       "A senha deve conter no mínimo 8 dígitos",
     ),
   dataNascimento: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Formato AAAA-MM-DD"),
-  convenio: z.string().optional(),
-  numCarteirinha: z.string().optional(),
+  matricula: z.string().min(1, "A matrícula é obrigatória"),
 });
 
-type PacienteForm = z.infer<typeof pacienteSchema>;
+type AtendenteForm = z.infer<typeof atendenteSchema>;
 
-export function FormularioPaciente() {
+export function FormularioAtendente() {
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditing = !!id;
@@ -55,8 +54,8 @@ export function FormularioPaciente() {
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<PacienteForm>({
-    resolver: zodResolver(pacienteSchema),
+  } = useForm<AtendenteForm>({
+    resolver: zodResolver(atendenteSchema),
   });
 
   const { onChange: cpfOnChange, ...cpfRegisterRest } = register("cpf");
@@ -64,7 +63,7 @@ export function FormularioPaciente() {
   useEffect(() => {
     if (isEditing) {
       api
-        .get(`/pacientes/${id}`)
+        .get(`/atendentes/${id}`)
         .then((response) => {
           const dados = response.data;
           reset({
@@ -72,19 +71,18 @@ export function FormularioPaciente() {
             cpf: mascaraCPFInput(dados.cpf),
             email: dados.email,
             dataNascimento: dados.dataNascimento,
-            convenio: dados.convenio || "",
-            numCarteirinha: dados.numCarteirinha || "",
+            matricula: dados.matricula,
           });
         })
         .catch(() => {
-          toast.error("Erro ao carregar dados do paciente.");
-          navigate("/admin/pacientes");
+          toast.error("Erro ao carregar dados do atendente.");
+          navigate("/admin/atendentes");
         })
         .finally(() => setLoadingDados(false));
     }
   }, [id, isEditing, reset, navigate]);
 
-  const onSubmit = async (data: PacienteForm) => {
+  const onSubmit = async (data: AtendenteForm) => {
     if (!isEditing && (!data.senha || data.senha.trim() === "")) {
       toast.error("A senha é obrigatória para novos cadastros.");
       return;
@@ -96,8 +94,7 @@ export function FormularioPaciente() {
       email: data.email,
       dataNascimento: data.dataNascimento,
       ehAdministrador: 0,
-      convenio: data.convenio,
-      numCarteirinha: data.numCarteirinha,
+      matricula: data.matricula,
     };
 
     if (data.senha && data.senha.trim() !== "") {
@@ -106,13 +103,13 @@ export function FormularioPaciente() {
 
     try {
       if (isEditing) {
-        await api.put(`/pacientes/${id}`, payload);
-        toast.success("Paciente atualizado com sucesso!");
+        await api.put(`/atendentes/${id}`, payload);
+        toast.success("Atendente atualizado com sucesso!");
       } else {
-        await api.post("/pacientes", payload);
-        toast.success("Paciente cadastrado com sucesso!");
+        await api.post("/atendentes", payload);
+        toast.success("Atendente cadastrado com sucesso!");
       }
-      navigate("/admin/pacientes");
+      navigate("/admin/atendentes");
     } catch (error: any) {
       toast.error(
         error.response?.data?.erro || "Ocorreu um erro ao salvar os dados.",
@@ -134,14 +131,14 @@ export function FormularioPaciente() {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink render={<Link to="/admin/pacientes" />}>
-              Pacientes
+            <BreadcrumbLink render={<Link to="/admin/atendentes" />}>
+              Atendentes
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbPage>
-              {isEditing ? "Editar Paciente" : "Novo Paciente"}
+              {isEditing ? "Editar Atendente" : "Novo Atendente"}
             </BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
@@ -149,10 +146,10 @@ export function FormularioPaciente() {
 
       <div>
         <h2 className="text-3xl font-bold tracking-tight text-slate-900">
-          {isEditing ? "Editar Paciente" : "Adicionar Paciente"}
+          {isEditing ? "Editar Atendente" : "Adicionar Atendente"}
         </h2>
         <p className="text-slate-500">
-          Preencha os dados pessoais e convênio do paciente.
+          Preencha os dados pessoais e as credenciais do atendente.
         </p>
       </div>
 
@@ -162,7 +159,7 @@ export function FormularioPaciente() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2 md:col-span-2">
                 <Label>Nome Completo</Label>
-                <Input placeholder="Nome do paciente" {...register("nome")} />
+                <Input placeholder="Nome do atendente" {...register("nome")} />
                 {errors.nome && (
                   <span className="text-sm text-red-500">
                     {errors.nome.message}
@@ -201,11 +198,11 @@ export function FormularioPaciente() {
                 )}
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 md:col-span-2">
                 <Label>E-mail</Label>
                 <Input
                   type="email"
-                  placeholder="paciente@email.com"
+                  placeholder="atendente@clinica.com"
                   {...register("email")}
                 />
                 {errors.email && (
@@ -248,13 +245,13 @@ export function FormularioPaciente() {
               </div>
 
               <div className="space-y-2">
-                <Label>Convênio (Opcional)</Label>
-                <Input placeholder="Ex: Unimed" {...register("convenio")} />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Nº Carteirinha (Opcional)</Label>
-                <Input placeholder="Número" {...register("numCarteirinha")} />
+                <Label>Matrícula</Label>
+                <Input placeholder="Ex: ATND-001" {...register("matricula")} />
+                {errors.matricula && (
+                  <span className="text-sm text-red-500">
+                    {errors.matricula.message}
+                  </span>
+                )}
               </div>
             </div>
 
@@ -262,12 +259,12 @@ export function FormularioPaciente() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => navigate("/admin/pacientes")}
+                onClick={() => navigate("/admin/atendentes")}
               >
                 Cancelar
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Salvando..." : "Salvar Paciente"}
+                {isSubmitting ? "Salvando..." : "Salvar Atendente"}
               </Button>
             </div>
           </form>

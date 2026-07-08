@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { api } from "@/api/axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +12,26 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Plus, Pencil, Trash2, Search } from "lucide-react";
+import { toast } from "sonner";
 import { formatarCPF, formatarDataIsoParaBr } from "@/lib/formatters";
 
 interface Atendente {
@@ -25,23 +45,43 @@ interface Atendente {
 }
 
 export function GerenciarAtendentes() {
+  const navigate = useNavigate();
   const [atendentes, setAtendentes] = useState<Atendente[]>([]);
   const [busca, setBusca] = useState("");
   const [loading, setLoading] = useState(true);
+  const [atendenteParaExcluir, setAtendenteParaExcluir] =
+    useState<Atendente | null>(null);
+
+  const carregarAtendentes = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get<Atendente[]>("/atendentes");
+      setAtendentes(response.data);
+    } catch (error) {
+      toast.error("Erro ao carregar a lista de atendentes.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    async function carregarAtendentes() {
-      try {
-        const response = await api.get<Atendente[]>("/atendentes");
-        setAtendentes(response.data);
-      } catch (error) {
-        console.error("Erro ao carregar atendentes", error);
-      } finally {
-        setLoading(false);
-      }
-    }
     carregarAtendentes();
   }, []);
+
+  const confirmarExclusao = async () => {
+    if (!atendenteParaExcluir) return;
+    try {
+      await api.delete(`/atendentes/${atendenteParaExcluir.id}`);
+      toast.success("Atendente excluído com sucesso.");
+      setAtendentes((prev) =>
+        prev.filter((a) => a.id !== atendenteParaExcluir.id),
+      );
+    } catch (error: any) {
+      toast.error(error.response?.data?.erro || "Erro ao excluir o atendente.");
+    } finally {
+      setAtendenteParaExcluir(null);
+    }
+  };
 
   const atendentesFiltrados = atendentes.filter((atendente) => {
     const termo = busca.toLowerCase();
@@ -54,6 +94,20 @@ export function GerenciarAtendentes() {
 
   return (
     <div className="space-y-6">
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink render={<Link to="/admin" />}>
+              Dashboard
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Gerenciar Atendentes</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold tracking-tight text-slate-900">
@@ -63,7 +117,10 @@ export function GerenciarAtendentes() {
             Gestão da equipe de recepção e triagem.
           </p>
         </div>
-        <Button className="gap-2 shrink-0">
+        <Button
+          className="gap-2 shrink-0"
+          onClick={() => navigate("/admin/atendentes/novo")}
+        >
           <Plus size={16} /> Adicionar Atendente
         </Button>
       </div>
@@ -141,6 +198,9 @@ export function GerenciarAtendentes() {
                     <Button
                       variant="ghost"
                       size="icon"
+                      onClick={() =>
+                        navigate(`/admin/atendentes/${atendente.id}/editar`)
+                      }
                       className="text-slate-500 hover:text-blue-600"
                     >
                       <Pencil size={18} />
@@ -148,6 +208,7 @@ export function GerenciarAtendentes() {
                     <Button
                       variant="ghost"
                       size="icon"
+                      onClick={() => setAtendenteParaExcluir(atendente)}
                       className="text-slate-500 hover:text-red-600"
                     >
                       <Trash2 size={18} />
@@ -159,6 +220,32 @@ export function GerenciarAtendentes() {
           </TableBody>
         </Table>
       </div>
+
+      <AlertDialog
+        open={!!atendenteParaExcluir}
+        onOpenChange={(open) => !open && setAtendenteParaExcluir(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja remover o atendente{" "}
+              <strong>{atendenteParaExcluir?.nome}</strong>? Se não existirem
+              outros perfis atrelados a este usuário, o acesso ao sistema também
+              será revogado.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmarExclusao}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

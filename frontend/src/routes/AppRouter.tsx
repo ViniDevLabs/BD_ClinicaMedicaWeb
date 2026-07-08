@@ -14,6 +14,7 @@ import { GerenciarPacientes } from "@/pages/admin/GerenciarPacientes";
 import { FormularioMedico } from "@/pages/admin/FormularioMedico";
 import { Toaster } from "sonner";
 import { FormularioPaciente } from "@/pages/admin/FormularioPaciente";
+import { FormularioAtendente } from "@/pages/admin/FormularioAtendente";
 
 export function AppRouter() {
   return (
@@ -39,6 +40,8 @@ export function AppRouter() {
               <Route path="/admin/pacientes/:id/editar" element={<FormularioPaciente />} />
 
               <Route path="/admin/atendentes" element={<GerenciarAtendentes />} />
+              <Route path="/admin/atendentes/novo" element={<FormularioAtendente />} />
+              <Route path="/admin/atendentes/:id/editar" element={<FormularioAtendente />} />
               
             </Route>
             <Route element={<RoleRoute allowedRoles={["MEDICO"]} />}>
