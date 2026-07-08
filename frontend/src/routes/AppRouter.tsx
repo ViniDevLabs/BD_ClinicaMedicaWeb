@@ -18,6 +18,10 @@ import { MinhasConsultas } from "@/pages/paciente/MinhasConsultas";
 import { DetalheConsulta } from "@/pages/paciente/DetalheConsulta";
 import { ResultadosExames } from "@/pages/paciente/ResultadosExames";
 import { Toaster } from "sonner";
+import { FormularioPaciente } from "@/pages/admin/FormularioPaciente";
+import { FormularioAtendente } from "@/pages/admin/FormularioAtendente";
+import { Forbidden } from "@/pages/errors/Forbidden";
+import { NotFound } from "@/pages/errors/NotFound";
 
 export function AppRouter() {
   return (
@@ -35,25 +39,17 @@ export function AppRouter() {
               <Route path="/admin" element={<DashboardAdmin />} />
 
               <Route path="/admin/medicos" element={<GerenciarMedicos />} />
-              <Route
-                path="/admin/medicos/novo"
-                element={<FormularioMedico />}
-              />
-              <Route
-                path="/admin/medicos/:id/editar"
-                element={<FormularioMedico />}
-              />
+              <Route path="/admin/medicos/novo" element={<FormularioMedico />} />
+              <Route path="/admin/medicos/:id/editar" element={<FormularioMedico />} />
 
               <Route path="/admin/pacientes" element={<GerenciarPacientes />} />
-              <Route
-                path="/admin/atendentes"
-                element={<GerenciarAtendentes />}
-              />
-              <Route path="/admin/pacientes" element={<GerenciarPacientes />} />
-              <Route
-                path="/admin/atendentes"
-                element={<GerenciarAtendentes />}
-              />
+              <Route path="/admin/pacientes/novo" element={<FormularioPaciente />} />
+              <Route path="/admin/pacientes/:id/editar" element={<FormularioPaciente />} />
+
+              <Route path="/admin/atendentes" element={<GerenciarAtendentes />} />
+              <Route path="/admin/atendentes/novo" element={<FormularioAtendente />} />
+              <Route path="/admin/atendentes/:id/editar" element={<FormularioAtendente />} />
+              
             </Route>
             <Route element={<RoleRoute allowedRoles={["MEDICO"]} />}>
               <Route path="/medico" element={<div>Dashboard do Médico</div>} />
@@ -79,8 +75,8 @@ export function AppRouter() {
           </Route>
         </Route>
 
-        <Route path="/forbidden" element={<div>Erro 403: Acesso Negado</div>} />
-        <Route path="*" element={<div>Erro 404: Página não encontrada</div>} />
+        <Route path="/forbidden" element={<Forbidden />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <Toaster richColors position="top-right" />
     </BrowserRouter>

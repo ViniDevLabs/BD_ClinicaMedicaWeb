@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { api } from "@/api/axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,11 +18,10 @@ import {
 } from "@/components/ui/breadcrumb";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
-import { medicoService } from "@/services/medico/medicoService";
 import { validarCPF } from "@/lib/validations";
 import { mascaraCPFInput } from "@/lib/formatters";
 
-const medicoSchema = z.object({
+const atendenteSchema = z.object({
   nome: z.string().min(3, "Nome muito curto"),
   cpf: z
     .string()
@@ -29,7 +29,6 @@ const medicoSchema = z.object({
     .refine((val) => validarCPF(val), "CPF inválido")
     .transform((val) => val.replace(/\D/g, "")),
   email: z.email("E-mail inválido"),
-
   senha: z
     .string()
     .optional()
@@ -38,19 +37,16 @@ const medicoSchema = z.object({
       "A senha deve conter no mínimo 8 dígitos",
     ),
   dataNascimento: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Formato AAAA-MM-DD"),
-  numero: z.number({ message: "Obrigatório" }).min(1, "Obrigatório"),
-  estado: z.string().length(2, "Sigla (ex: SP)"),
-  especialidadesInput: z.string().min(3, "Obrigatório (separadas por vírgula)"),
+  matricula: z.string().min(1, "A matrícula é obrigatória"),
 });
 
-type MedicoForm = z.infer<typeof medicoSchema>;
+type AtendenteForm = z.infer<typeof atendenteSchema>;
 
-export function FormularioMedico() {
+export function FormularioAtendente() {
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditing = !!id;
   const [loadingDados, setLoadingDados] = useState(isEditing);
-
   const [mostrarSenha, setMostrarSenha] = useState(false);
 
   const {
@@ -58,36 +54,35 @@ export function FormularioMedico() {
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<MedicoForm>({
-    resolver: zodResolver(medicoSchema),
+  } = useForm<AtendenteForm>({
+    resolver: zodResolver(atendenteSchema),
   });
 
   const { onChange: cpfOnChange, ...cpfRegisterRest } = register("cpf");
 
   useEffect(() => {
     if (isEditing) {
-      medicoService
-        .buscarPorId(Number(id))
-        .then((dados) => {
+      api
+        .get(`/atendentes/${id}`)
+        .then((response) => {
+          const dados = response.data;
           reset({
             nome: dados.nome,
             cpf: mascaraCPFInput(dados.cpf),
             email: dados.email,
             dataNascimento: dados.dataNascimento,
-            numero: dados.numero,
-            estado: dados.estado,
-            especialidadesInput: dados.especialidades.join(", "),
+            matricula: dados.matricula,
           });
         })
         .catch(() => {
-          toast.error("Erro ao carregar dados do médico.");
-          navigate("/admin/medicos");
+          toast.error("Erro ao carregar dados do atendente.");
+          navigate("/admin/atendentes");
         })
         .finally(() => setLoadingDados(false));
     }
   }, [id, isEditing, reset, navigate]);
 
-  const onSubmit = async (data: MedicoForm) => {
+  const onSubmit = async (data: AtendenteForm) => {
     if (!isEditing && (!data.senha || data.senha.trim() === "")) {
       toast.error("A senha é obrigatória para novos cadastros.");
       return;
@@ -99,12 +94,7 @@ export function FormularioMedico() {
       email: data.email,
       dataNascimento: data.dataNascimento,
       ehAdministrador: 0,
-      numero: data.numero,
-      estado: data.estado,
-      especialidades: data.especialidadesInput
-        .split(",")
-        .map((e) => e.trim())
-        .filter((e) => e !== ""),
+      matricula: data.matricula,
     };
 
     if (data.senha && data.senha.trim() !== "") {
@@ -113,13 +103,13 @@ export function FormularioMedico() {
 
     try {
       if (isEditing) {
-        await medicoService.atualizar(Number(id), payload);
-        toast.success("Médico atualizado com sucesso!");
+        await api.put(`/atendentes/${id}`, payload);
+        toast.success("Atendente atualizado com sucesso!");
       } else {
-        await medicoService.criar(payload);
-        toast.success("Médico cadastrado com sucesso!");
+        await api.post("/atendentes", payload);
+        toast.success("Atendente cadastrado com sucesso!");
       }
-      navigate("/admin/medicos");
+      navigate("/admin/atendentes");
     } catch (error: any) {
       toast.error(
         error.response?.data?.erro || "Ocorreu um erro ao salvar os dados.",
@@ -141,14 +131,14 @@ export function FormularioMedico() {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink render={<Link to="/admin/medicos" />}>
-              Médicos
+            <BreadcrumbLink render={<Link to="/admin/atendentes" />}>
+              Atendentes
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbPage>
-              {isEditing ? "Editar Médico" : "Novo Médico"}
+              {isEditing ? "Editar Atendente" : "Novo Atendente"}
             </BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
@@ -156,10 +146,10 @@ export function FormularioMedico() {
 
       <div>
         <h2 className="text-3xl font-bold tracking-tight text-slate-900">
-          {isEditing ? "Editar Médico" : "Adicionar Médico"}
+          {isEditing ? "Editar Atendente" : "Adicionar Atendente"}
         </h2>
         <p className="text-slate-500">
-          Preencha as informações profissionais e biográficas.
+          Preencha os dados pessoais e as credenciais do atendente.
         </p>
       </div>
 
@@ -169,10 +159,7 @@ export function FormularioMedico() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2 md:col-span-2">
                 <Label>Nome Completo</Label>
-                <Input
-                  placeholder="Nome do profissional"
-                  {...register("nome")}
-                />
+                <Input placeholder="Nome do atendente" {...register("nome")} />
                 {errors.nome && (
                   <span className="text-sm text-red-500">
                     {errors.nome.message}
@@ -211,11 +198,11 @@ export function FormularioMedico() {
                 )}
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 md:col-span-2">
                 <Label>E-mail</Label>
                 <Input
                   type="email"
-                  placeholder="medico@clinica.com"
+                  placeholder="atendente@clinica.com"
                   {...register("email")}
                 />
                 {errors.email && (
@@ -258,46 +245,11 @@ export function FormularioMedico() {
               </div>
 
               <div className="space-y-2">
-                <Label>Número CRM</Label>
-                <Input
-                  type="number"
-                  placeholder="Apenas números"
-                  {...register("numero", { valueAsNumber: true })}
-                />
-                {errors.numero && (
+                <Label>Matrícula</Label>
+                <Input placeholder="Ex: ATND-001" {...register("matricula")} />
+                {errors.matricula && (
                   <span className="text-sm text-red-500">
-                    {errors.numero.message}
-                  </span>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label>Estado (UF)</Label>
-                <Input
-                  placeholder="SP"
-                  maxLength={2}
-                  {...register("estado")}
-                  className="uppercase"
-                />
-                {errors.estado && (
-                  <span className="text-sm text-red-500">
-                    {errors.estado.message}
-                  </span>
-                )}
-              </div>
-
-              <div className="space-y-2 md:col-span-2">
-                <Label>Especialidades</Label>
-                <Input
-                  placeholder="Infectologia, Pediatria, Cirurgia Geral"
-                  {...register("especialidadesInput")}
-                />
-                <p className="text-xs text-slate-500">
-                  Separe as especialidades por vírgula.
-                </p>
-                {errors.especialidadesInput && (
-                  <span className="text-sm text-red-500">
-                    {errors.especialidadesInput.message}
+                    {errors.matricula.message}
                   </span>
                 )}
               </div>
@@ -307,12 +259,12 @@ export function FormularioMedico() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => navigate("/admin/medicos")}
+                onClick={() => navigate("/admin/atendentes")}
               >
                 Cancelar
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Salvando..." : "Salvar Médico"}
+                {isSubmitting ? "Salvando..." : "Salvar Atendente"}
               </Button>
             </div>
           </form>
