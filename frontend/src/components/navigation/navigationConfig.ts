@@ -5,6 +5,7 @@ import {
   UserCog,
   Stethoscope,
   Calendar,
+  CalendarPlus,
   FileText,
   ListTodo,
 } from "lucide-react";
@@ -42,6 +43,7 @@ export const ROLE_NAVIGATION: Record<Role, NavItem[]> = {
   ],
   PACIENTE: [
     { title: "Meu Resumo", path: "/paciente", icon: LayoutDashboard },
+    { title: "Agendar Consulta", path: "/paciente/agendar", icon: CalendarPlus },
     { title: "Minhas Consultas", path: "/paciente/consultas", icon: Calendar },
     { title: "Resultados de Exames", path: "/paciente/exames", icon: FileText },
   ],

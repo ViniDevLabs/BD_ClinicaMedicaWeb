@@ -22,3 +22,16 @@ VALUES (1, 1, 'Hemograma completo', '2026-07-10', 'Interno', 'Solicitado em jeju
 
 INSERT IGNORE INTO Prontuario_Clinico (id_prontuario, id_agendamento, diagnostico, prescricao, registro_observacoes)
 VALUES (1, 1, 'Faringite viral', 'Repouso e hidratação. Analgésico se dor.', 'Paciente orientado a retornar em 7 dias se sintomas persistirem.');
+
+-- Disponibilidade padrão dos médicos (habilita o agendamento em horários reais)
+INSERT IGNORE INTO Disponibilidade_Padrao
+    (id_disponibilidade, id_medico, data_inicio, data_fim, horario_inicio, horario_fim, dia_semana, duracao_consulta)
+VALUES
+    (1, 2, '2026-01-01', '2026-12-31', '08:00:00', '17:00:00', 'SEGUNDA', 30),
+    (2, 2, '2026-01-01', '2026-12-31', '08:00:00', '17:00:00', 'TERCA', 30),
+    (3, 2, '2026-01-01', '2026-12-31', '08:00:00', '17:00:00', 'QUARTA', 30),
+    (4, 2, '2026-01-01', '2026-12-31', '08:00:00', '17:00:00', 'QUINTA', 30),
+    (5, 2, '2026-01-01', '2026-12-31', '08:00:00', '17:00:00', 'SEXTA', 30),
+    (6, 5, '2026-01-01', '2026-12-31', '09:00:00', '15:00:00', 'SEGUNDA', 45),
+    (7, 5, '2026-01-01', '2026-12-31', '09:00:00', '15:00:00', 'QUARTA', 45),
+    (8, 5, '2026-01-01', '2026-12-31', '09:00:00', '15:00:00', 'SEXTA', 45);

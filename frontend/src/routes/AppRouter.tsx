@@ -12,6 +12,11 @@ import { GerenciarAtendentes } from "@/pages/admin/GerenciarAtendentes";
 import { GerenciarMedicos } from "@/pages/admin/GerenciarMedicos";
 import { GerenciarPacientes } from "@/pages/admin/GerenciarPacientes";
 import { FormularioMedico } from "@/pages/admin/FormularioMedico";
+import { DashboardPaciente } from "@/pages/paciente/DashboardPaciente";
+import { AgendarConsulta } from "@/pages/paciente/AgendarConsulta";
+import { MinhasConsultas } from "@/pages/paciente/MinhasConsultas";
+import { DetalheConsulta } from "@/pages/paciente/DetalheConsulta";
+import { ResultadosExames } from "@/pages/paciente/ResultadosExames";
 import { Toaster } from "sonner";
 
 export function AppRouter() {
@@ -62,10 +67,14 @@ export function AppRouter() {
             </Route>
 
             <Route element={<RoleRoute allowedRoles={["PACIENTE"]} />}>
+              <Route path="/paciente" element={<DashboardPaciente />} />
+              <Route path="/paciente/agendar" element={<AgendarConsulta />} />
+              <Route path="/paciente/consultas" element={<MinhasConsultas />} />
               <Route
-                path="/paciente"
-                element={<div>Dashboard do Paciente</div>}
+                path="/paciente/consultas/:id"
+                element={<DetalheConsulta />}
               />
+              <Route path="/paciente/exames" element={<ResultadosExames />} />
             </Route>
           </Route>
         </Route>

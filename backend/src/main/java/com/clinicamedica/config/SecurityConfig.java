@@ -239,7 +239,7 @@ public class SecurityConfig {
                             .hasAnyRole(ROLE_ADMIN, ROLE_MEDICO, ROLE_ATENDENTE);
 
                     req.requestMatchers(HttpMethod.PATCH, ROTA_EXAMES_ANEXAR_LAUDO)
-                            .hasAnyRole(ROLE_ADMIN, ROLE_MEDICO);
+                            .hasAnyRole(ROLE_ADMIN, ROLE_MEDICO, ROLE_ATENDENTE, ROLE_PACIENTE);
 
                     req.requestMatchers(HttpMethod.PATCH, ROTA_EXAMES_CONCLUIR)
                             .hasAnyRole(ROLE_ADMIN, ROLE_MEDICO);

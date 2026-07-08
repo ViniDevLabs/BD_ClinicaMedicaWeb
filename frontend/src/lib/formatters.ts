@@ -12,6 +12,19 @@ export function formatarDataIsoParaBr(dataIso: string | undefined): string {
   return `${partes[2]}/${partes[1]}/${partes[0]}`;
 }
 
+export function formatarDataHoraBr(iso: string | undefined): string {
+  if (!iso) return "-";
+  const [data, hora] = iso.split("T");
+  const dataBr = formatarDataIsoParaBr(data);
+  const horaBr = hora ? hora.slice(0, 5) : "";
+  return horaBr ? `${dataBr} às ${horaBr}` : dataBr;
+}
+
+export function formatarHora(hora: string | undefined): string {
+  if (!hora) return "-";
+  return hora.slice(0, 5);
+}
+
 export function mascaraCPFInput(valor: string): string {
   if (!valor) return "";
 
