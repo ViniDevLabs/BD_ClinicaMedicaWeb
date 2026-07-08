@@ -15,6 +15,8 @@ import { FormularioMedico } from "@/pages/admin/FormularioMedico";
 import { Toaster } from "sonner";
 import { FormularioPaciente } from "@/pages/admin/FormularioPaciente";
 import { FormularioAtendente } from "@/pages/admin/FormularioAtendente";
+import { Forbidden } from "@/pages/errors/Forbidden";
+import { NotFound } from "@/pages/errors/NotFound";
 
 export function AppRouter() {
   return (
@@ -64,8 +66,8 @@ export function AppRouter() {
           </Route>
         </Route>
 
-        <Route path="/forbidden" element={<div>Erro 403: Acesso Negado</div>} />
-        <Route path="*" element={<div>Erro 404: Página não encontrada</div>} />
+        <Route path="/forbidden" element={<Forbidden />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <Toaster richColors position="top-right" />
     </BrowserRouter>
