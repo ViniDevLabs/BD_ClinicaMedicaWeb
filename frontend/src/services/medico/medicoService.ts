@@ -1,20 +1,5 @@
 import { api } from "@/api/axios";
-
-export interface MedicoRequest {
-  cpf: string;
-  nome: string;
-  email: string;
-  senha?: string;
-  dataNascimento: string;
-  ehAdministrador: number;
-  numero: number;
-  estado: string;
-  especialidades: string[];
-}
-
-export interface MedicoResponse extends MedicoRequest {
-  id: number;
-}
+import type { MedicoRequest, MedicoResponse } from "@/types/medico";
 
 export const medicoService = {
   listar: async () => (await api.get<MedicoResponse[]>("/medicos")).data,

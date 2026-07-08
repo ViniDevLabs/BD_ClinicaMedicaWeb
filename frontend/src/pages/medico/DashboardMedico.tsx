@@ -143,8 +143,8 @@ export function DashboardMedico() {
                   </div>
                   <div>
                     <p className="text-2xl font-semibold">
-                      {pacientes.get(proximaConsulta.idPaciente) ??
-                        `Paciente #${proximaConsulta.idPaciente}`}
+                      {pacientes.get(proximaConsulta.paciente.idPaciente) ??
+                        `Paciente #${proximaConsulta.paciente.idPaciente}`}
                     </p>
                     <p className="text-slate-300">
                       {formatarDataHoraBr(proximaConsulta.dataHora)}
@@ -235,8 +235,8 @@ export function DashboardMedico() {
                             {formatarHora(c.dataHora.slice(11))}
                           </span>
                           <span className="text-slate-900">
-                            {pacientes.get(c.idPaciente) ??
-                              `Paciente #${c.idPaciente}`}
+                            {pacientes.get(c.paciente.idPaciente) ??
+                              `Paciente #${c.paciente.idPaciente}`}
                           </span>
                         </div>
                         <Badge className={badge.className}>{badge.label}</Badge>

@@ -8,7 +8,6 @@ import {
   CalendarPlus,
   CalendarClock,
   FileText,
-  ListTodo,
 } from "lucide-react";
 
 export interface NavItem {
@@ -44,11 +43,14 @@ export const ROLE_NAVIGATION: Record<Role, NavItem[]> = {
       path: "/atendente/agendamentos",
       icon: Calendar,
     },
-    { title: "Fila de Triagem", path: "/atendente/triagem", icon: ListTodo },
   ],
   PACIENTE: [
     { title: "Meu Resumo", path: "/paciente", icon: LayoutDashboard },
-    { title: "Agendar Consulta", path: "/paciente/agendar", icon: CalendarPlus },
+    {
+      title: "Agendar Consulta",
+      path: "/paciente/agendar",
+      icon: CalendarPlus,
+    },
     { title: "Minhas Consultas", path: "/paciente/consultas", icon: Calendar },
     { title: "Resultados de Exames", path: "/paciente/exames", icon: FileText },
   ],

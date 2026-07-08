@@ -5,6 +5,9 @@ import type {
 } from "@/types/agendamento";
 
 export const agendamentoService = {
+  listar: async () =>
+    (await api.get<AgendamentoResponse[]>("/agendamentos")).data,
+
   listarPorPaciente: async (idPaciente: number) =>
     (
       await api.get<AgendamentoResponse[]>(
@@ -32,6 +35,9 @@ export const agendamentoService = {
   cancelar: async (id: number) =>
     (await api.patch<AgendamentoResponse>(`/agendamentos/${id}/cancelar`)).data,
 
+  confirmarCheckIn: async (id: number) =>
+    (await api.patch<AgendamentoResponse>(`/agendamentos/${id}/confirmar`))
+      .data,
   realizar: async (id: number) =>
     (await api.patch<AgendamentoResponse>(`/agendamentos/${id}/realizar`)).data,
 };

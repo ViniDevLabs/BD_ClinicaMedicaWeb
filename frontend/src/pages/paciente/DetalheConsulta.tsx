@@ -11,7 +11,12 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { FileText, Stethoscope, ClipboardList, FlaskConical } from "lucide-react";
+import {
+  FileText,
+  Stethoscope,
+  ClipboardList,
+  FlaskConical,
+} from "lucide-react";
 import { toast } from "sonner";
 import { agendamentoService } from "@/services/agendamento/agendamentoService";
 import { medicoService } from "@/services/medico/medicoService";
@@ -20,7 +25,7 @@ import { exameService } from "@/services/exame/exameService";
 import type { AgendamentoResponse } from "@/types/agendamento";
 import type { ProntuarioResponse } from "@/types/prontuario";
 import type { ExameResponse } from "@/types/exame";
-import type { MedicoResponse } from "@/services/medico/medicoService";
+import type { MedicoResponse } from "@/types/medico";
 import { formatarDataHoraBr, formatarDataIsoParaBr } from "@/lib/formatters";
 import { statusAgendamentoBadge, statusExameBadge } from "@/lib/statusBadge";
 
@@ -41,7 +46,9 @@ export function DetalheConsulta() {
         setConsulta(agendamento);
 
         const [dadosMedico, dadosProntuario, dadosExames] = await Promise.all([
-          medicoService.buscarPorId(agendamento.idMedico).catch(() => null),
+          medicoService
+            .buscarPorId(agendamento.medico.idMedico)
+            .catch(() => null),
           prontuarioService.buscarPorAgendamento(agendamento.idAgendamento),
           exameService.listarPorAgendamento(agendamento.idAgendamento),
         ]);
@@ -103,7 +110,7 @@ export function DetalheConsulta() {
             </div>
             <div className="space-y-1">
               <p className="text-lg font-semibold text-slate-900">
-                {medico?.nome ?? `Médico #${consulta.idMedico}`}
+                {medico?.nome ?? `Médico #${consulta.medico.idMedico}`}
               </p>
               <p className="text-sm text-slate-500">
                 {medico?.especialidades.join(", ") || "Consulta médica"}
@@ -128,8 +135,14 @@ export function DetalheConsulta() {
         <CardContent>
           {prontuario ? (
             <div className="space-y-4">
-              <CampoProntuario titulo="Diagnóstico" valor={prontuario.diagnostico} />
-              <CampoProntuario titulo="Prescrição" valor={prontuario.prescricao} />
+              <CampoProntuario
+                titulo="Diagnóstico"
+                valor={prontuario.diagnostico}
+              />
+              <CampoProntuario
+                titulo="Prescrição"
+                valor={prontuario.prescricao}
+              />
               <CampoProntuario
                 titulo="Observações médicas"
                 valor={prontuario.registroObservacoes}

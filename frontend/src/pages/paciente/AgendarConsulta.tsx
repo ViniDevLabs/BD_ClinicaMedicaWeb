@@ -17,7 +17,7 @@ import {
 import { toast } from "sonner";
 import { agendamentoService } from "@/services/agendamento/agendamentoService";
 import { medicoService } from "@/services/medico/medicoService";
-import type { MedicoResponse } from "@/services/medico/medicoService";
+import type { MedicoResponse } from "@/types/medico";
 import { formatarHora } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
 
@@ -56,7 +56,7 @@ export function AgendarConsulta() {
           const original = await agendamentoService.buscarPorId(
             Number(retornoDe),
           );
-          const medico = lista.find((m) => m.id === original.idMedico);
+          const medico = lista.find((m) => m.id === original.medico.idMedico);
           if (medico) setMedicoSelecionado(medico);
         }
       } catch {
@@ -138,7 +138,8 @@ export function AgendarConsulta() {
       navigate("/paciente/consultas");
     } catch (error: any) {
       toast.error(
-        error.response?.data?.erro || "Não foi possível concluir o agendamento.",
+        error.response?.data?.erro ||
+          "Não foi possível concluir o agendamento.",
       );
     } finally {
       setSalvando(false);
@@ -146,7 +147,7 @@ export function AgendarConsulta() {
   };
 
   return (
-    <div className="space-y-6 max-w-4xl">
+    <div className="space-y-6">
       <div>
         <h2 className="text-3xl font-bold tracking-tight text-slate-900">
           {retornoDe ? "Agendar Retorno" : "Agendar Consulta"}
