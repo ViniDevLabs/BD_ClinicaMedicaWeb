@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { api } from "@/api/axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +12,26 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Plus, Pencil, Trash2, Search } from "lucide-react";
+import { toast } from "sonner";
 import { formatarCPF, formatarDataIsoParaBr } from "@/lib/formatters";
 
 interface Paciente {
@@ -26,23 +46,43 @@ interface Paciente {
 }
 
 export function GerenciarPacientes() {
+  const navigate = useNavigate();
   const [pacientes, setPacientes] = useState<Paciente[]>([]);
   const [busca, setBusca] = useState("");
   const [loading, setLoading] = useState(true);
+  const [pacienteParaExcluir, setPacienteParaExcluir] =
+    useState<Paciente | null>(null);
+
+  const carregarPacientes = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get<Paciente[]>("/pacientes");
+      setPacientes(response.data);
+    } catch (error) {
+      toast.error("Erro ao carregar a lista de pacientes.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    async function carregarPacientes() {
-      try {
-        const response = await api.get<Paciente[]>("/pacientes");
-        setPacientes(response.data);
-      } catch (error) {
-        console.error("Erro ao carregar pacientes", error);
-      } finally {
-        setLoading(false);
-      }
-    }
     carregarPacientes();
   }, []);
+
+  const confirmarExclusao = async () => {
+    if (!pacienteParaExcluir) return;
+    try {
+      await api.delete(`/pacientes/${pacienteParaExcluir.id}`);
+      toast.success("Paciente excluído com sucesso.");
+      setPacientes((prev) =>
+        prev.filter((p) => p.id !== pacienteParaExcluir.id),
+      );
+    } catch (error: any) {
+      toast.error(error.response?.data?.erro || "Erro ao excluir o paciente.");
+    } finally {
+      setPacienteParaExcluir(null);
+    }
+  };
 
   const pacientesFiltrados = pacientes.filter((paciente) => {
     const termo = busca.toLowerCase();
@@ -55,6 +95,20 @@ export function GerenciarPacientes() {
 
   return (
     <div className="space-y-6">
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink render={<Link to="/admin" />}>
+              Dashboard
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Gerenciar Pacientes</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold tracking-tight text-slate-900">
@@ -64,7 +118,10 @@ export function GerenciarPacientes() {
             Listagem e controle de pacientes cadastrados.
           </p>
         </div>
-        <Button className="gap-2 shrink-0">
+        <Button
+          className="gap-2 shrink-0"
+          onClick={() => navigate("/admin/pacientes/novo")}
+        >
           <Plus size={16} /> Adicionar Paciente
         </Button>
       </div>
@@ -146,6 +203,9 @@ export function GerenciarPacientes() {
                     <Button
                       variant="ghost"
                       size="icon"
+                      onClick={() =>
+                        navigate(`/admin/pacientes/${paciente.id}/editar`)
+                      }
                       className="text-slate-500 hover:text-blue-600"
                     >
                       <Pencil size={18} />
@@ -153,6 +213,7 @@ export function GerenciarPacientes() {
                     <Button
                       variant="ghost"
                       size="icon"
+                      onClick={() => setPacienteParaExcluir(paciente)}
                       className="text-slate-500 hover:text-red-600"
                     >
                       <Trash2 size={18} />
@@ -164,6 +225,32 @@ export function GerenciarPacientes() {
           </TableBody>
         </Table>
       </div>
+
+      <AlertDialog
+        open={!!pacienteParaExcluir}
+        onOpenChange={(open) => !open && setPacienteParaExcluir(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja remover o paciente{" "}
+              <strong>{pacienteParaExcluir?.nome}</strong>? Se não existirem
+              outros perfis atrelados a este usuário, o acesso ao sistema também
+              será revogado.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmarExclusao}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

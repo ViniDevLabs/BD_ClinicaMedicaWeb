@@ -13,6 +13,7 @@ import { GerenciarMedicos } from "@/pages/admin/GerenciarMedicos";
 import { GerenciarPacientes } from "@/pages/admin/GerenciarPacientes";
 import { FormularioMedico } from "@/pages/admin/FormularioMedico";
 import { Toaster } from "sonner";
+import { FormularioPaciente } from "@/pages/admin/FormularioPaciente";
 
 export function AppRouter() {
   return (
@@ -30,25 +31,15 @@ export function AppRouter() {
               <Route path="/admin" element={<DashboardAdmin />} />
 
               <Route path="/admin/medicos" element={<GerenciarMedicos />} />
-              <Route
-                path="/admin/medicos/novo"
-                element={<FormularioMedico />}
-              />
-              <Route
-                path="/admin/medicos/:id/editar"
-                element={<FormularioMedico />}
-              />
+              <Route path="/admin/medicos/novo" element={<FormularioMedico />} />
+              <Route path="/admin/medicos/:id/editar" element={<FormularioMedico />} />
 
               <Route path="/admin/pacientes" element={<GerenciarPacientes />} />
-              <Route
-                path="/admin/atendentes"
-                element={<GerenciarAtendentes />}
-              />
-              <Route path="/admin/pacientes" element={<GerenciarPacientes />} />
-              <Route
-                path="/admin/atendentes"
-                element={<GerenciarAtendentes />}
-              />
+              <Route path="/admin/pacientes/novo" element={<FormularioPaciente />} />
+              <Route path="/admin/pacientes/:id/editar" element={<FormularioPaciente />} />
+
+              <Route path="/admin/atendentes" element={<GerenciarAtendentes />} />
+              
             </Route>
             <Route element={<RoleRoute allowedRoles={["MEDICO"]} />}>
               <Route path="/medico" element={<div>Dashboard do Médico</div>} />
